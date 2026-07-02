@@ -1,0 +1,160 @@
+services:
+  # ============================================================
+  # 基础设施
+  # ============================================================
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ai_test_platform_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # 应用服务
+  # ============================================================
+
+  langgraph-server:
+    build:
+      context: .
+      dockerfile: docker/langgraph/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "2026:2026"
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_URI: postgresql://postgres:root@postgres:5432/ai_test_platform_db
+      REDIS_URI: redis://redis:6379/0
+      MONGODB_HOST: mongodb
+      MINIO_ENDPOINT: minio:9000
+      LANGGRAPH_API_URL: http://localhost:2026
+    volumes:
+      # 开发模式：挂载源码实现热更新（改代码后只需重启容器）
+      - ./start_server_postgres.py:/app/start_server_postgres.py
+      - ./langgraph_api:/app/langgraph_api
+      - ./langgraph_runtime_postgres:/app/langgraph_runtime_postgres
+      - ./langgraph_source:/app/langgraph_source
+      - ./backend:/app/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_URI: postgresql://postgres:root@postgres:5432/ai_test_platform_db
+      MONGODB_HOST: mongodb
+      MINIO_ENDPOINT: minio:9000
+    volumes:
+      # 开发模式：挂载 backend 源码
+      - ./backend/app:/app/backend/app
+      - ./backend/alembic:/app/backend/alembic
+      - ./backend/alembic.ini:/app/backend/alembic.ini
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_LANGGRAPH_API_URL: http://localhost:2026
+      NEXT_PUBLIC_TESTCASE_GENERATOR_ASSISTANT_ID: testcase_generator_agent
+      API_SERVER_INTERNAL_URL: http://backend:3001
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # 开发模式：挂载源码（Next.js 自动热重载）
+      - ./ui/app:/app/app
+      - ./ui/components:/app/components
+      - ./ui/lib:/app/lib
+      - ./ui/public:/app/public
+    depends_on:
+      - backend
+      - langgraph-server
+
+  gitnexus-web:
+    build:
+      context: .
+      dockerfile: docker/gitnexus-web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
+  mongodb-data:
+  minio-data:
