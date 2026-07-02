@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "types": [
+      "node"
+    ]
+  },
+  "_buildId": "id_MC81OmFIVnBZMlhsaUpqbWxvYzZabmhuZGc9PToyODQ4NWUwOQ==",
+  "include": [
+    "vite.config.ts"
+  ],
+  "_deployId": "id_MS81OmFIVnBZMlhsaUpqbWxvYzZabmhuZGc9PToyODQ4NWUwOQ==",
+  "_releaseId": "id_Mi81OmFIVnBZMlhsaUpqbWxvYzZabmhuZGc9PToyODQ4NWUwOQ==",
+  "_versionId": "id_My81OmFIVnBZMlhsaUpqbWxvYzZabmhuZGc9PToyODQ4NWUwOQ==",
+  "_buildHash": "NC81OmFIVnBZMlhsaUpqbWxvYzZabmhuZGc9PToyODQ4NWUwOQ=="
+}
