@@ -81,6 +81,8 @@ services:
       MONGODB_HOST: mongodb
       MINIO_ENDPOINT: minio:9000
       LANGGRAPH_API_URL: http://localhost:2026
+      RAG_API_URL: http://rag-api:9623
+      RAG_MCP_URL: http://rag-mcp:8003
     volumes:
       # 开发模式：挂载源码实现热更新（改代码后只需重启容器）
       - ./start_server_postgres.py:/app/start_server_postgres.py
@@ -88,6 +90,7 @@ services:
       - ./langgraph_runtime_postgres:/app/langgraph_runtime_postgres
       - ./langgraph_source:/app/langgraph_source
       - ./backend:/app/backend
+      - ./.claude/skills:/app/.claude/skills
     depends_on:
       postgres:
         condition: service_healthy
@@ -144,6 +147,19 @@ services:
       - backend
       - langgraph-server
 
+  gitnexus-backend:
+    build:
+      context: .
+      dockerfile: docker/gitnexus-backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4747:4747"
+    working_dir: /repo
+    volumes:
+      - ./:/repo
+    environment:
+      - GITNEXUS_PORT=4748
+
   gitnexus-web:
     build:
       context: .
@@ -153,8 +169,56 @@ services:
       - "5173:5173"
     depends_on:
       - backend
+      - gitnexus-backend
+
+  # ============================================================
+  # RAG 服务 (LightRAG + RAG-Anything)
+  # ============================================================
+  rag-api:
+    build:
+      context: .
+      dockerfile: docker/rag/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "9623:9623"
+    environment:
+      - LLM_BINDING=openai
+      - LLM_BINDING_HOST=https://api.deepseek.com/v1
+      - LLM_BINDING_API_KEY=${DEEPSEEK_API_KEY}
+      - LLM_MODEL=deepseek-chat
+      - EMBEDDING_BINDING=openai
+      - EMBEDDING_BINDING_HOST=https://llm-08uxgg93tc7ea8eb.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+      - EMBEDDING_BINDING_API_KEY=${EMBEDDING_API_KEY}
+      - EMBEDDING_MODEL=text-embedding-v4
+      - EMBEDDING_DIM=1024
+      - WORKING_DIR=/app/storage
+      - INPUT_DIR=/app/inputs
+      - WEBUI_TITLE=AI测试平台RAG系统
+      - WEBUI_DESCRIPTION=企业级RAG知识库系统
+    volumes:
+      - rag-storage:/app/storage
+      - rag-inputs:/app/inputs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  rag-mcp:
+    build:
+      context: .
+      dockerfile: docker/rag-mcp/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    environment:
+      - RAG_BASE_URL=http://rag-api:9623
+      - RAG_USERNAME=admin
+      - RAG_PASSWORD=admin123
+      - RAG_SPACE_ID=cmp_space
+    depends_on:
+      - rag-api
 
 volumes:
   postgres-data:
   mongodb-data:
   minio-data:
+  rag-storage:
+  rag-inputs:

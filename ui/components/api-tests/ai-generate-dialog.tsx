@@ -6,7 +6,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { Sparkles, Loader2, Link as LinkIcon, Upload, FileCode, ChevronLeft } from "lucide-react";
+import { Sparkles, Loader2, Link as LinkIcon, Upload, FileCode, ChevronLeft, ClipboardList, Laptop, Save, FileEdit, AlertTriangle, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -96,28 +96,28 @@ export function AIGenerateAPITestDialog({
     if (onOpenChat) {
       const chatPrompt = `请按照以下流程为 API 生成测试：
 
-📋 第一步：生成测试计划
+<ClipboardList className="h-4 w-4 inline" /> 第一步：生成测试计划
 使用 api_planner 工具：
 - 分析 API 端点和参数
 - 制定测试策略
 - 生成测试计划文档
 
-💻 第二步：生成测试代码
+<Laptop className="h-4 w-4 inline" /> 第二步：生成测试代码
 使用 api_generator 工具：
 - 根据计划生成测试脚本
 - 支持格式：${scriptFormat}
 - 语言：${scriptLanguage}
 
-💾 第三步：保存成果物
+<Save className="h-4 w-4 inline" /> 第三步：保存成果物
 使用 save_test_plan 和 save_test_script 保存
 
 Schema 来源：${schemaSource === "url" ? "URL" : "文件"}
 ${schemaSource === "url" ? `Schema URL: ${schemaUrl}` : `文件: ${schemaFile?.name}`}
 ${prompt.trim() ? `
-📝 特殊要求：
+<FileEdit className="h-4 w-4 inline" /> 特殊要求：
 ${prompt.trim()}` : ""}
 
-⚠️ 重要：严格按照工具职责执行，不得混淆使用！`;
+<AlertTriangle className="h-4 w-4 inline" /> 重要：严格按照工具职责执行，不得混淆使用！`;
 
       onOpenChat(chatPrompt);
       resetForm();
@@ -255,7 +255,7 @@ ${prompt.trim()}` : ""}
                 className="resize-none"
               />
               <p className="text-xs text-muted-foreground flex items-start gap-1">
-                <span className="text-primary">💡</span>
+                <Lightbulb className="h-5 w-5 text-primary" />
                 <span>可选。描述您希望测试的特定场景、关注点或特殊要求，AI 会根据您的需求生成更精准的测试脚本。</span>
               </p>
             </div>

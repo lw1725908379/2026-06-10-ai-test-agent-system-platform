@@ -27,6 +27,7 @@ import {
   Pencil,
   Check,
   Trash2,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -801,7 +802,7 @@ export function APIEndpointSidebar({
                 />
               </div>
               <div className="text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="font-medium text-blue-700 dark:text-blue-400 mb-1">💡 {t("common.info")}</p>
+                <p className="font-medium text-blue-700 dark:text-blue-400 mb-1"><Lightbulb className="h-4 w-4 inline" /> {t("common.info")}</p>
                 <p>{t("apiTests.autoGenerateNote")}</p>
               </div>
             </div>

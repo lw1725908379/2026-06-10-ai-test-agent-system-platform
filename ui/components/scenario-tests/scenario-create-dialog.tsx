@@ -8,7 +8,7 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -127,7 +127,7 @@ export function ScenarioCreateDialog({
             {/* 提示信息 */}
             <div className="rounded-lg bg-blue-50 dark:bg-blue-950/20 p-3 border border-blue-200 dark:border-blue-800">
               <p className="text-xs text-blue-700 dark:text-blue-400">
-                💡 <strong>{t("common.info")}</strong>：{t("scenarioTests.scenarioCreateHint")}
+                <Lightbulb className="h-4 w-4 inline" /> <strong>{t("common.info")}</strong>：{t("scenarioTests.scenarioCreateHint")}
               </p>
             </div>
           </div>

@@ -1,0 +1,124 @@
+Metadata-Version: 2.4
+Name: lightrag-hku
+Version: 1.4.10
+Summary: LightRAG: Simple and Fast Retrieval-Augmented Generation
+Author: Zirui Guo
+License: MIT
+Project-URL: Homepage, https://github.com/HKUDS/LightRAG
+Project-URL: Documentation, https://github.com/HKUDS/LightRAG
+Project-URL: Repository, https://github.com/HKUDS/LightRAG
+Project-URL: Bug Tracker, https://github.com/HKUDS/LightRAG/issues
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: aiohttp
+Requires-Dist: configparser
+Requires-Dist: docling>=2.61.2
+Requires-Dist: fastapi>=0.120.2
+Requires-Dist: fastmcp
+Requires-Dist: google-api-core<3.0.0,>=2.0.0
+Requires-Dist: google-genai<2.0.0,>=1.0.0
+Requires-Dist: httpx
+Requires-Dist: json_repair
+Requires-Dist: nano-vectordb
+Requires-Dist: networkx
+Requires-Dist: numpy<3.0.0,>=1.26.4
+Requires-Dist: ollama>=0.6.0
+Requires-Dist: openai<3.0.0,>=2.0.0
+Requires-Dist: packaging
+Requires-Dist: pandas<2.4.0,>=2.0.0
+Requires-Dist: pipmaster
+Requires-Dist: pydantic
+Requires-Dist: pyjwt>=2.8.0
+Requires-Dist: pypinyin
+Requires-Dist: python-dotenv
+Requires-Dist: raganything
+Requires-Dist: setuptools
+Requires-Dist: tenacity
+Requires-Dist: tiktoken
+Requires-Dist: uvicorn>=0.38.0
+Requires-Dist: xlsxwriter>=3.1.0
+Provides-Extra: pytest
+Requires-Dist: pytest>=8.4.2; extra == "pytest"
+Requires-Dist: pytest-asyncio>=1.2.0; extra == "pytest"
+Requires-Dist: pre-commit; extra == "pytest"
+Requires-Dist: ruff; extra == "pytest"
+Provides-Extra: api
+Requires-Dist: aiohttp; extra == "api"
+Requires-Dist: configparser; extra == "api"
+Requires-Dist: json_repair; extra == "api"
+Requires-Dist: nano-vectordb; extra == "api"
+Requires-Dist: networkx; extra == "api"
+Requires-Dist: numpy<3.0.0,>=1.24.0; extra == "api"
+Requires-Dist: openai<3.0.0,>=2.0.0; extra == "api"
+Requires-Dist: pandas<2.4.0,>=2.0.0; extra == "api"
+Requires-Dist: pipmaster; extra == "api"
+Requires-Dist: pydantic; extra == "api"
+Requires-Dist: pypinyin; extra == "api"
+Requires-Dist: python-dotenv; extra == "api"
+Requires-Dist: setuptools; extra == "api"
+Requires-Dist: tenacity; extra == "api"
+Requires-Dist: tiktoken; extra == "api"
+Requires-Dist: xlsxwriter>=3.1.0; extra == "api"
+Requires-Dist: google-api-core<3.0.0,>=2.0.0; extra == "api"
+Requires-Dist: google-genai<2.0.0,>=1.0.0; extra == "api"
+Requires-Dist: aiofiles; extra == "api"
+Requires-Dist: ascii_colors; extra == "api"
+Requires-Dist: distro; extra == "api"
+Requires-Dist: fastapi; extra == "api"
+Requires-Dist: httpcore; extra == "api"
+Requires-Dist: httpx>=0.28.1; extra == "api"
+Requires-Dist: jiter; extra == "api"
+Requires-Dist: bcrypt>=4.0.0; extra == "api"
+Requires-Dist: psutil; extra == "api"
+Requires-Dist: PyJWT<3.0.0,>=2.8.0; extra == "api"
+Requires-Dist: python-jose[cryptography]; extra == "api"
+Requires-Dist: python-multipart; extra == "api"
+Requires-Dist: pytz; extra == "api"
+Requires-Dist: uvicorn; extra == "api"
+Requires-Dist: gunicorn; extra == "api"
+Requires-Dist: openpyxl<4.0.0,>=3.0.0; extra == "api"
+Requires-Dist: pycryptodome<4.0.0,>=3.0.0; extra == "api"
+Requires-Dist: pypdf>=6.1.0; extra == "api"
+Requires-Dist: python-docx<2.0.0,>=0.8.11; extra == "api"
+Requires-Dist: python-pptx<2.0.0,>=0.6.21; extra == "api"
+Provides-Extra: docling
+Requires-Dist: docling<3.0.0,>=2.0.0; sys_platform != "darwin" and extra == "docling"
+Provides-Extra: offline-storage
+Requires-Dist: redis<8.0.0,>=5.0.0; extra == "offline-storage"
+Requires-Dist: neo4j<7.0.0,>=5.0.0; extra == "offline-storage"
+Requires-Dist: pymilvus<3.0.0,>=2.6.2; extra == "offline-storage"
+Requires-Dist: pymongo<5.0.0,>=4.0.0; extra == "offline-storage"
+Requires-Dist: asyncpg<1.0.0,>=0.31.0; extra == "offline-storage"
+Requires-Dist: pgvector<1.0.0,>=0.4.2; extra == "offline-storage"
+Requires-Dist: qdrant-client<2.0.0,>=1.11.0; extra == "offline-storage"
+Provides-Extra: offline-llm
+Requires-Dist: openai<3.0.0,>=2.0.0; extra == "offline-llm"
+Requires-Dist: anthropic<1.0.0,>=0.18.0; extra == "offline-llm"
+Requires-Dist: ollama<1.0.0,>=0.1.0; extra == "offline-llm"
+Requires-Dist: zhipuai<3.0.0,>=2.0.0; extra == "offline-llm"
+Requires-Dist: aioboto3<16.0.0,>=12.0.0; extra == "offline-llm"
+Requires-Dist: voyageai<1.0.0,>=0.2.0; extra == "offline-llm"
+Requires-Dist: llama-index<1.0.0,>=0.14.0; extra == "offline-llm"
+Requires-Dist: llama-index-llms-openai>=0.6.12; extra == "offline-llm"
+Requires-Dist: google-api-core<3.0.0,>=2.0.0; extra == "offline-llm"
+Requires-Dist: google-genai<2.0.0,>=1.0.0; extra == "offline-llm"
+Provides-Extra: offline
+Requires-Dist: lightrag-hku[api,offline-llm,offline-storage]; extra == "offline"
+Provides-Extra: test
+Requires-Dist: lightrag-hku[api]; extra == "test"
+Requires-Dist: pytest>=8.4.2; extra == "test"
+Requires-Dist: pytest-asyncio>=1.2.0; extra == "test"
+Requires-Dist: pre-commit; extra == "test"
+Requires-Dist: ruff; extra == "test"
+Provides-Extra: evaluation
+Requires-Dist: lightrag-hku[api]; extra == "evaluation"
+Requires-Dist: ragas>=0.3.7; extra == "evaluation"
+Requires-Dist: datasets>=4.3.0; extra == "evaluation"
+Provides-Extra: observability
+Requires-Dist: langfuse>=3.8.1; extra == "observability"

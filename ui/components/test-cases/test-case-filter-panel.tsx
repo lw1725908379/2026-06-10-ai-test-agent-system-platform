@@ -71,15 +71,15 @@ const priorityOptions: { value: Priority; label: string; icon: string }[] = [
 
 const statusOptions: { value: TestCaseState; label: string }[] = [
   // 设计阶段
-  { value: "new", label: "🆕 新建" },
-  { value: "review_pending", label: "⏳ 待评审" },
-  { value: "reviewed", label: "✅ 已评审" },
+  { value: "new", label: "新建" },
+  { value: "review_pending", label: "待评审" },
+  { value: "reviewed", label: "已评审" },
   // 执行阶段
-  { value: "not_run", label: "⚪ 未执行" },
-  { value: "passed", label: "✅ 通过" },
-  { value: "failed", label: "❌ 失败" },
-  { value: "blocked", label: "🚫 阻塞" },
-  { value: "skipped", label: "⏭️ 跳过" },
+  { value: "not_run", label: "未执行" },
+  { value: "passed", label: "通过" },
+  { value: "failed", label: "失败" },
+  { value: "blocked", label: "阻塞" },
+  { value: "skipped", label: "跳过" },
 ];
 
 /**

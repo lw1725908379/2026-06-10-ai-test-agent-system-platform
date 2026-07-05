@@ -2,7 +2,7 @@
 // eslint-disable  MC80OmFIVnBZMlhsaUpqbWxvYzZjMEpVY1E9PTo5ZDAwMzcxYw==
 
 import * as React from "react";
-import { Globe, Play, Trash2, Edit } from "lucide-react";
+import { Globe, Play, Trash2, Edit, ClipboardList, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/providers/LanguageProvider";
 import type { WebPage } from "@/lib/api/web-tests";
@@ -51,7 +51,7 @@ export function WebPageList({
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 truncate">
-                  🌐 {page.url}
+                  <Globe className="h-4 w-4 inline" /> {page.url}
                 </p>
                 {page.description && (
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
@@ -59,7 +59,7 @@ export function WebPageList({
                   </p>
                 )}
                 <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
-                  <span>📋 {page.total_test_cases} {t("webTests.testCases")}</span>
+                  <ClipboardList className="h-4 w-4 inline" /> {page.total_test_cases} {t("webTests.testCases")}
                   <span>▶️ {page.total_test_runs} {t("webTests.testRuns")}</span>
                   {page.last_run_status && (
                     <span className={
@@ -67,8 +67,9 @@ export function WebPageList({
                       page.last_run_status === "failed" ? "text-red-600" :
                       "text-yellow-600"
                     }>
-                      {page.last_run_status === "passed" ? "✅" :
-                       page.last_run_status === "failed" ? "❌" : "⏳"}
+                      {page.last_run_status === "passed" ? <CheckCircle className="h-4 w-4 text-green-500" /> :
+                       page.last_run_status === "failed" ? <XCircle className="h-4 w-4 text-red-500" /> :
+                       <Clock className="h-4 w-4 text-yellow-500" />}
                     </span>
                   )}
                 </div>

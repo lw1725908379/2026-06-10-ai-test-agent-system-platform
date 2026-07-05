@@ -14,6 +14,8 @@ import {
   FolderKanban,
   FileText,
   Bot,
+  ScanLine,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { MainLayout } from "@/components/layout";
@@ -62,21 +64,21 @@ export default function ProjectsPage() {
       id: 1,
       name: t("ai.testCaseGenerator"),
       description: t("ai.testCaseGeneratorDesc"),
-      icon: "🤖",
+      icon: Bot,
       status: "active",
     },
     {
       id: 2,
       name: t("ai.defectAnalyzer"),
       description: t("ai.defectAnalyzerDesc"),
-      icon: "🔍",
+      icon: ScanLine,
       status: "active",
     },
     {
       id: 3,
       name: t("ai.regressionOptimizer"),
       description: t("ai.regressionOptimizerDesc"),
-      icon: "⚡",
+      icon: Zap,
       status: "coming",
     },
   ];
@@ -247,7 +249,7 @@ export default function ProjectsPage() {
                 className="rounded-lg border bg-card p-4 transition-shadow hover:shadow-md"
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-2xl">{agent.icon}</span>
+                  <agent.icon className="h-6 w-6" />
                   <Badge
                     variant={agent.status === "active" ? "default" : "secondary"}
                   >

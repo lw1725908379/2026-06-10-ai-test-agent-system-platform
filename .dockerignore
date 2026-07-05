@@ -1,0 +1,16 @@
+.venv
+node_modules
+.next
+__pycache__
+*.pyc
+.git
+.gitignore
+*.log
+.idea
+.vscode
+ui/node_modules
+ui/.next
+gitnexus-web/node_modules
+gitnexus-shared/node_modules
+langgraph_api/js/node_modules
+

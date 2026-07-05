@@ -233,14 +233,14 @@ export const translations = {
     priorityLow: "低",
 
     // ステータスラベル
-    statusNew: "🆕 新規",
-    statusReviewPending: "⏳ 審審待ち",
-    statusReviewed: "✅ 審査済み",
-    statusNotRun: "⚪ 未実行",
-    statusPassed: "✅ 合格",
-    statusFailed: "❌ 失敗",
-    statusBlocked: "🚫 ブロック",
-    statusSkipped: "⏭️ スキップ",
+    statusNew: "新規",
+    statusReviewPending: "審査待ち",
+    statusReviewed: "審査済み",
+    statusNotRun: "未実行",
+    statusPassed: "合格",
+    statusFailed: "失敗",
+    statusBlocked: "ブロック",
+    statusSkipped: "スキップ",
 
     // その他の UI テキスト
     searchPlaceholder: "テストケースを検索...",
@@ -611,7 +611,7 @@ export const translations = {
     scenarioDescriptionLabel: "シナリオの説明",
     scenarioNamePlaceholder: "例：ユーザーの注文の完全なフロー",
     scenarioDescriptionPlaceholder: "シナリオの目的とテストするビジネスフローを説明...",
-    scenarioCreateHint: "💡 ヒ示：シナリオを作成した後、「シナリオオーケストレーション」ビューでステップを追加し、データ依存関係とアサーションを設定できます。",
+    scenarioCreateHint: "ヒント：シナリオを作成した後、「シナリオオーケストレーション」ビューでステップを追加し、データ依存関係とアサーションを設定できます。",
     scenarioCreating: "作成中...",
   },
 

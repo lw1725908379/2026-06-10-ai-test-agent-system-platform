@@ -111,17 +111,19 @@ async def get_rag_tools() -> list:
     Returns:
         RAG 工具列表
     """
+    from app.config.settings import settings
+
     try:
         from langchain_mcp_adapters.client import MultiServerMCPClient
 
         client = MultiServerMCPClient({
             "rag-server": {
-                "url": "http://127.0.0.1:8002/sse",
+                "url": f"{settings.rag_mcp_url}/sse",
                 "transport": "sse",
             }
         })
-
         tools = await client.get_tools()
+        logger.info(f"成功加载 RAG MCP 工具: {len(tools)} 个")
         return tools
     except Exception as e:
         logger.warning(f"Failed to load RAG MCP tools: {e}")

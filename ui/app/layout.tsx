@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 // @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZZMkZxVUE9PTo1YzQ0ODE2ZA==
 
 export const metadata: Metadata = {
-  title: "但问智能测试平台",
+  title: "智能测试平台",
   description: "AI 驱动的智能测试系统",
 };
 // FIXME  MS8yOmFIVnBZMlhsaUpqbWxvYzZZMkZxVUE9PTo1YzQ0ODE2ZA==

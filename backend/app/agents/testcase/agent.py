@@ -330,12 +330,17 @@ export_test_cases_to_excel(
 # 输出行为规范
 
 1. **每模块完成后**：自动调用 `quality-review` 轻量自检（10项快速检查），输出自检结果
-2. **所有模块完成后**：输出完整汇总表 + 质量评审报告（四维度评分）
-3. **格式选择**：
+2. **分批输出原则（防止客户端超时）**：
+   - 生成测试用例时，**每完成一个功能模块立即输出结果**，不要等待所有模块全部生成
+   - 每批次输出 1-2 个模块的内容，然后继续下一批次
+   - 示例：完成"模块A"的用例后先输出，再继续生成"模块B"
+   - 禁止一次性生成全部模块的用例文本再输出
+3. **所有模块完成后**：输出完整汇总表 + 质量评审报告（四维度评分）
+4. **格式选择**：
    - 未指定时 -> 默认 `output-formatter` 的 Markdown 详细格式
    - 用户说"导出" -> 询问目标工具（禅道/TestRail/Excel/Jira），调用 `output-formatter` 输出对应格式
-4. **用例密度控制**：P0 >= 3条/模块，P1 >= 3条/核心功能，P2/P3按需补充
-5. **语言一致性**：用户用中文提问，所有输出（包括用例标题、步骤、预期结果）必须使用中文
+5. **用例密度控制**：P0 >= 3条/模块，P1 >= 3条/核心功能，P2/P3按需补充
+6. **语言一致性**：用户用中文提问，所有输出（包括用例标题、步骤、预期结果）必须使用中文
 6. **保持输出**：定期输出进度信息，避免长时间无响应
 
 ---
@@ -389,8 +394,10 @@ async def make_agent() -> AsyncIterator[Pregel]:
 # agent = make_agent
 context_middleware = ContextInjectionMiddleware()
 
-# 加载本地工具
+# 加载本地工具（RAG 工具直接创建，不依赖 MCP 客户端）
 all_tools = asyncio.run(get_local_tools())
+
+# noqa  My80OmFIVnBZMlhsaUpqbWxvYzZSblk0ZWc9PTpmYWY3ZjIzMw==
 
 # 包装工具以处理错误，防止 Agent 执行中断
 all_tools = wrap_tools_with_error_handling(all_tools)

@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -100,7 +100,7 @@ export function AIGenerateDialog({
           {/* 示例提示 */}
           <div className="rounded-lg border border-muted bg-muted/30 p-3">
             <p className="text-xs font-medium text-muted-foreground mb-2">
-              💡 描述示例：
+              <Lightbulb className="h-4 w-4 inline" /> 描述示例：
             </p>
             <p className="text-xs text-muted-foreground">
               产品管理功能，包括产品列表查看、产品搜索、产品添加、产品编辑、产品删除等子功能。

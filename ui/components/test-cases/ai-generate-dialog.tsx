@@ -2,7 +2,7 @@
 // TODO  MC80OmFIVnBZMlhsaUpqbWxvYzZOSEo2UkE9PTo2NDk2YmFkNA==
 
 import * as React from "react";
-import { Sparkles, Loader2, X } from "lucide-react";
+import { Sparkles, Loader2, X, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -158,7 +158,7 @@ ${folderId ? `目标文件夹ID：${folderId}` : ""}
               className="resize-none"
             />
             <p className="text-xs text-muted-foreground flex items-start gap-1">
-              <span className="text-primary">💡</span>
+              <Lightbulb className="h-5 w-5 text-primary" />
               <span>描述越详细，生成的测试用例越准确。可以包含功能描述、业务场景、边界条件等信息。</span>
             </p>
           </div>

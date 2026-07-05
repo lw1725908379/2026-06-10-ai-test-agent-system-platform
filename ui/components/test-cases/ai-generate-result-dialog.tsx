@@ -2,7 +2,7 @@
 // FIXME  MC80OmFIVnBZMlhsaUpqbWxvYzZiSGRKZFE9PTo0NzIzNjZmNg==
 
 import * as React from "react";
-import { ChevronRight, ChevronDown, ThumbsUp, ThumbsDown, Sparkles } from "lucide-react";
+import { ChevronRight, ChevronDown, ThumbsUp, ThumbsDown, Sparkles, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -74,7 +74,7 @@ export function AIGenerateResultDialog({
           <p className="text-sm text-muted-foreground">{prompt}</p>
           {folderId && (
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">📁</span>
+              <Folder className="h-4 w-4 text-muted-foreground" />
               <span>{folderId}</span>
             </div>
           )}

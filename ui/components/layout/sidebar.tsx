@@ -18,6 +18,7 @@ import {
   Layers,
   Shield,
   Smartphone,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,11 @@ export function Sidebar({
       href: "/fullstack-analysis",
       icon: Layers,
     },
+    {
+      title: t("nav.knowledgeBase"),
+      href: "/knowledge-base",
+      icon: BookOpen,
+    },
   ];
 
   const getNavHref = (baseHref: string) => {
@@ -111,7 +117,6 @@ export function Sidebar({
       {/* Logo */}
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/projects" className="flex items-center gap-2">
-          <img src="/logo.svg" alt="logo" className="h-6 w-6" />
           <span className="font-semibold">{t("meta.title")}</span>
         </Link>
       </div>

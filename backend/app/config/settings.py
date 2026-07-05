@@ -163,7 +163,7 @@ class Settings(BaseSettings):
 
     # 测试用例工作目录配置
     testcase_workspace_root: str = "C:/Users/65132/Desktop/workspace/testing/ai-test-management/backend/workspace/testcase"
-    testcase_skills_root: str = ".claude/skills/testcase"
+    testcase_skills_root: str = ".claude/skills"
 
     # 渗透测试工作目录配置
     security_workspace_root: str = "backend/workspace/security"
@@ -173,6 +173,15 @@ class Settings(BaseSettings):
     android_workspace_root: str = "backend/workspace/android"
     android_skills_root: str = ".claude/skills/android"
     adb_path: Optional[str] = None  # adb 可执行文件绝对路径（如 C:/Users/xxx/AppData/Local/Android/Sdk/platform-tools/adb.exe）
+
+    # RAG 服务配置
+    rag_api_url: str = "http://localhost:9623"
+    rag_mcp_url: str = "http://localhost:8003"
+    rag_space_id: str = "cmp_space"
+    rag_username: Optional[str] = "admin"
+    rag_password: Optional[str] = "admin123"
+    rag_workspace_root: str = "rag/workspace"
+    rag_input_root: str = "rag/inputs"
 
 
 @lru_cache

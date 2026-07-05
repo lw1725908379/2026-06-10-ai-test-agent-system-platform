@@ -540,15 +540,15 @@ export function TestCaseList({
               <SelectContent>
                 <SelectItem value="all">全部状态</SelectItem>
                 {/* 设计阶段 */}
-                <SelectItem value="new">🆕 新建</SelectItem>
-                <SelectItem value="review_pending">⏳ 待评审</SelectItem>
-                <SelectItem value="reviewed">✅ 已评审</SelectItem>
+                <SelectItem value="new">{statusLabels["new"]}</SelectItem>
+                <SelectItem value="review_pending">{statusLabels["review_pending"]}</SelectItem>
+                <SelectItem value="reviewed">{statusLabels["reviewed"]}</SelectItem>
                 {/* 执行阶段 */}
-                <SelectItem value="not_run">⚪ 未执行</SelectItem>
-                <SelectItem value="passed">✅ 通过</SelectItem>
-                <SelectItem value="failed">❌ 失败</SelectItem>
-                <SelectItem value="blocked">🚫 阻塞</SelectItem>
-                <SelectItem value="skipped">⏭️ 跳过</SelectItem>
+                <SelectItem value="not_run">{statusLabels["not_run"]}</SelectItem>
+                <SelectItem value="passed">{statusLabels["passed"]}</SelectItem>
+                <SelectItem value="failed">{statusLabels["failed"]}</SelectItem>
+                <SelectItem value="blocked">{statusLabels["blocked"]}</SelectItem>
+                <SelectItem value="skipped">{statusLabels["skipped"]}</SelectItem>
               </SelectContent>
             </Select>
           </div>

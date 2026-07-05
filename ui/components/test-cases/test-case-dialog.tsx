@@ -598,15 +598,15 @@ export function TestCaseDialog({
                       </SelectTrigger>
                       <SelectContent>
                         {/* 设计阶段 */}
-                        <SelectItem value="new">🆕 新建</SelectItem>
-                        <SelectItem value="review_pending">⏳ 待评审</SelectItem>
-                        <SelectItem value="reviewed">✅ 已评审</SelectItem>
+                        <SelectItem value="new">新建</SelectItem>
+                        <SelectItem value="review_pending">待评审</SelectItem>
+                        <SelectItem value="reviewed">已评审</SelectItem>
                         {/* 执行阶段 */}
-                        <SelectItem value="not_run">⚪ 未执行</SelectItem>
-                        <SelectItem value="passed">✅ 通过</SelectItem>
-                        <SelectItem value="failed">❌ 失败</SelectItem>
-                        <SelectItem value="blocked">🚫 阻塞</SelectItem>
-                        <SelectItem value="skipped">⏭️ 跳过</SelectItem>
+                        <SelectItem value="not_run">未执行</SelectItem>
+                        <SelectItem value="passed">通过</SelectItem>
+                        <SelectItem value="failed">失败</SelectItem>
+                        <SelectItem value="blocked">阻塞</SelectItem>
+                        <SelectItem value="skipped">跳过</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

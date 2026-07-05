@@ -18,6 +18,7 @@ import {
   Clock,
   Circle,
   FileIcon,
+  Loader2,
 } from "lucide-react";
 import { ChatMessage } from "@/components/langgraph/ChatMessage";
 import type {
@@ -106,6 +107,30 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
   }, []);
 
   const submitDisabled = isLoading || !assistant;
+
+  // 长时间加载提示（生成大段内容时）
+  const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
+  const [showLongWaitHint, setShowLongWaitHint] = useState(false);
+
+  useEffect(() => {
+    if (isLoading && !loadingStartTime) {
+      setLoadingStartTime(Date.now());
+      setShowLongWaitHint(false);
+    } else if (!isLoading) {
+      setLoadingStartTime(null);
+      setShowLongWaitHint(false);
+    }
+  }, [isLoading, loadingStartTime]);
+
+  useEffect(() => {
+    if (!loadingStartTime) return;
+    const interval = setInterval(() => {
+      if (Date.now() - loadingStartTime > 10000) {
+        setShowLongWaitHint(true);
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [loadingStartTime]);
 
   const handleSubmit = useCallback(
     (e?: FormEvent) => {
@@ -353,6 +378,12 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
             </div>
           ) : (
             <>
+              {showLongWaitHint && (
+                <div className="mx-auto mb-2 flex max-w-[1024px] items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>正在生成大量内容，请稍候...</span>
+                </div>
+              )}
               {processedMessages.map((data, index) => {
                 const messageUi = messageUiMap.get(data.message.id ?? "");
                 const isLastMessage = index === processedMessages.length - 1;
