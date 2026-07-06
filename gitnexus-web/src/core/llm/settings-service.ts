@@ -79,13 +79,50 @@ const writeSettings = (storage: Storage, settings: LLMSettings): void => {
 };
 
 /**
+ * Try to seed settings from Vite environment variables.
+ * Returns true if env vars were found and settings were saved.
+ */
+const trySeedFromEnvVars = (): boolean => {
+  try {
+    const activeProvider = import.meta.env.VITE_LLM_ACTIVE_PROVIDER;
+    if (!activeProvider) return false;
+
+    const settings: LLMSettings = {
+      ...DEFAULT_LLM_SETTINGS,
+      activeProvider: activeProvider as LLMProvider,
+      openai: {
+        ...DEFAULT_LLM_SETTINGS.openai,
+        apiKey: import.meta.env.VITE_LLM_OPENAI_API_KEY || '',
+        model: import.meta.env.VITE_LLM_OPENAI_MODEL || DEFAULT_LLM_SETTINGS.openai?.model || 'gpt-4o',
+        baseUrl: import.meta.env.VITE_LLM_OPENAI_BASE_URL || DEFAULT_LLM_SETTINGS.openai?.baseUrl,
+      },
+    };
+
+    // TypeScript needs Vite client types for import.meta.env
+    // In this project, the env access works through vite/client
+
+    saveSettings(settings);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Load settings from localStorage.
+ * Falls back to VITE_LLM_* env vars (Docker/CI injected) when localStorage is empty.
+ * Falls back to DEFAULT_LLM_SETTINGS when nothing is configured.
  */
 export const loadSettings = (): LLMSettings => {
   try {
     const data = typeof localStorage !== 'undefined' ? readSettings(localStorage) : null;
     if (data) {
       return mergeWithDefaults(data);
+    }
+    // No stored settings — try seeding from Vite env vars (Docker compose)
+    if (trySeedFromEnvVars()) {
+      const seeded = readSettings(localStorage);
+      if (seeded) return mergeWithDefaults(seeded);
     }
     return DEFAULT_LLM_SETTINGS;
   } catch (error) {

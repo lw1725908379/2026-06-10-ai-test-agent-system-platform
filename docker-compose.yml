@@ -170,6 +170,11 @@ services:
     restart: unless-stopped
     ports:
       - "5173:5173"
+    environment:
+      - VITE_LLM_ACTIVE_PROVIDER=openai
+      - VITE_LLM_OPENAI_API_KEY=${DEEPSEEK_API_KEY}
+      - VITE_LLM_OPENAI_MODEL=deepseek-chat
+      - VITE_LLM_OPENAI_BASE_URL=https://api.deepseek.com/v1
     depends_on:
       - backend
       - gitnexus-backend

@@ -11,7 +11,7 @@ export default function FullstackAnalysisPage() {
     <MainLayout title={t("nav.fullstackAnalysis")}>
       <div className="-m-6 h-full">
         <iframe
-          src="/gitnexus-web/index.html"
+          src="http://localhost:5173/gitnexus-web/"
           className="h-full w-full border-0"
           title={t("nav.fullstackAnalysis")}
           allow="fullscreen"

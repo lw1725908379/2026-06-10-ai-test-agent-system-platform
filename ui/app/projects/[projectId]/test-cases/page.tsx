@@ -154,7 +154,7 @@ export default function TestCasesPage() {
       if (response.success) {
         const cases = response.data || response.test_cases || [];
         setTestCases(cases);
-        setTotal(response.pagination?.total || 0);
+        setTotal(response.info?.total || response.pagination?.total || 0);
 
         // 提取可用的标签和负责人
         const tags = new Set<string>();

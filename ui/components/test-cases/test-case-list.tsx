@@ -145,7 +145,9 @@ export function TestCaseList({
   availableOwners,
 }: TestCaseListProps) {
   const exportTargetIds = React.useMemo(
-    () => (selectedIds.size > 0 ? Array.from(selectedIds) : testCases.map((tc) => tc.identifier)),
+    () => (selectedIds.size > 0
+      ? testCases.filter((tc) => selectedIds.has(tc.id)).map((tc) => tc.identifier)
+      : testCases.map((tc) => tc.identifier)),
     [selectedIds, testCases]
   );
 
@@ -297,13 +299,25 @@ export function TestCaseList({
   };
 
   // 全选/取消全选
-  const handleSelectAll = React.useCallback((checked: boolean) => {
+  const handleSelectAll = React.useCallback(async (checked: boolean) => {
     if (checked) {
-      onSelectIds(new Set(localTestCases.map((tc) => tc.id)));
+      // 从 API 获取当前筛选条件下的全部用例 ID（不限制页数）
+      try {
+        const params = new URLSearchParams({ page_size: "300" });
+        if (searchQuery) params.set("search", searchQuery);
+        const res = await fetch(`/api/v2/projects/${projectId}/test-cases?${params}`);
+        const data = await res.json();
+        const allIds = (data.data || []).map((tc: { id: string }) => tc.id);
+        onSelectIds(new Set(allIds));
+        toast.success(`已选择全部 ${allIds.length} 条用例`);
+      } catch {
+        // 降级：只选当前页
+        onSelectIds(new Set(localTestCases.map((tc) => tc.id)));
+      }
     } else {
       onSelectIds(new Set());
     }
-  }, [localTestCases, onSelectIds]);
+  }, [localTestCases, onSelectIds, projectId, searchQuery]);
 
   // 单选
   const handleSelect = React.useCallback((id: string, checked: boolean) => {
@@ -726,6 +740,10 @@ export function TestCaseList({
           </span>
           <Button variant="outline" size="sm">
             批量编辑
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExportExcel}>
+            <FileDown className="mr-2 h-4 w-4" />
+            批量导出
           </Button>
           <Button
             variant="outline"
