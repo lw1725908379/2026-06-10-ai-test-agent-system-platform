@@ -16,6 +16,7 @@ import {
   Sparkles,
   Upload,
   Download,
+  FileDown,
   ClipboardList,
   Keyboard,
   Filter,
@@ -51,6 +52,12 @@ import {
 import { TableRowSkeleton, FilterBarSkeleton } from "./test-case-skeleton";
 import type { TestCaseInfo, Priority, TestCaseState, TestCaseTemplate } from "@/lib/api/types";
 import {
+  exportExcelTestCases,
+  exportBDDTestCases,
+  getExportStatus,
+  downloadExport,
+} from "@/lib/api/testCases";
+import {
   DndContext,
   DragOverlay,
   closestCenter,
@@ -70,6 +77,7 @@ import { CSS } from "@dnd-kit/utilities";
 // TODO  MS80OmFIVnBZMlhsaUpqbWxvYzZWakZOWnc9PTplNTU5NzliMA==
 
 interface TestCaseListProps {
+  projectId: string;
   testCases: TestCaseInfo[];
   loading: boolean;
   selectedIds: Set<string>;
@@ -112,6 +120,7 @@ const priorityColors: Record<Priority, string> = {
 // @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZWakZOWnc9PTplNTU5NzliMA==
 
 export function TestCaseList({
+  projectId,
   testCases,
   loading,
   selectedIds,
@@ -135,6 +144,84 @@ export function TestCaseList({
   availableTags,
   availableOwners,
 }: TestCaseListProps) {
+  const exportTargetIds = React.useMemo(
+    () => (selectedIds.size > 0 ? Array.from(selectedIds) : testCases.map((tc) => tc.identifier)),
+    [selectedIds, testCases]
+  );
+
+  const handleExportExcel = async () => {
+    if (exportTargetIds.length === 0) {
+      toast.info("当前没有可导出的测试用例");
+      return;
+    }
+    try {
+      const blob = await exportExcelTestCases(projectId, exportTargetIds);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `test_cases_${projectId}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Excel 导出成功");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Excel 导出失败");
+    }
+  };
+
+  const handleExportBDD = async () => {
+    if (exportTargetIds.length === 0) {
+      toast.info("当前没有可导出的测试用例");
+      return;
+    }
+    const bddCases = testCases.filter(
+      (tc) => tc.template === "test_case_bdd" && exportTargetIds.includes(tc.identifier)
+    );
+    if (bddCases.length === 0) {
+      toast.info("选中的测试用例中没有 BDD 用例");
+      return;
+    }
+    const combineIntoOne = bddCases.length > 1;
+    const combinedFeature = combineIntoOne ? "Combined Features" : bddCases[0]?.name || "Feature";
+    try {
+      const res = await exportBDDTestCases(
+        projectId,
+        bddCases.map((tc) => tc.identifier),
+        combineIntoOne,
+        combinedFeature
+      );
+      toast.success("BDD 导出任务已启动，正在生成文件...");
+      const exportId = res.export_id;
+      const poll = setInterval(async () => {
+        try {
+          const status = await getExportStatus(exportId);
+          if (status.status === "completed") {
+            clearInterval(poll);
+            const blob = await downloadExport(exportId);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = combineIntoOne ? `${combinedFeature.replace(/\s+/g, "_")}.feature` : `bdd_export_${exportId.slice(0, 8)}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("BDD 导出成功");
+          } else if (status.status === "failed") {
+            clearInterval(poll);
+            toast.error(status.error_message || "BDD 导出失败");
+          }
+        } catch (error) {
+          clearInterval(poll);
+          toast.error(error instanceof Error ? error.message : "BDD 导出状态查询失败");
+        }
+      }, 1000);
+      setTimeout(() => clearInterval(poll), 30000);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "BDD 导出失败");
+    }
+  };
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [quickCreateTitle, setQuickCreateTitle] = React.useState("");
@@ -738,8 +825,26 @@ export function TestCaseList({
                   从文档生成
                 </Button>
               )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <FileDown className="mr-2 h-4 w-4" />
+                    导出
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportExcel}>
+                    <Download className="mr-2 h-4 w-4" />
+                    导出 Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportBDD}>
+                    <FileDown className="mr-2 h-4 w-4" />
+                    导出 BDD (.feature)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button variant="outline" onClick={() => toast.info("导入测试用例功能开发中")}>
-                <Download className="mr-2 h-4 w-4" />
+                <Upload className="mr-2 h-4 w-4" />
                 导入测试用例
               </Button>
             </div>

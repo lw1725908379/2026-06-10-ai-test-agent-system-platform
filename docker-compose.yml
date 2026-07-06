@@ -79,10 +79,11 @@ services:
       POSTGRES_URI: postgresql://postgres:root@postgres:5432/ai_test_platform_db
       REDIS_URI: redis://redis:6379/0
       MONGODB_HOST: mongodb
-      MINIO_ENDPOINT: minio:9000
       LANGGRAPH_API_URL: http://localhost:2026
+      BACKEND_API_URL: http://backend:3001
       RAG_API_URL: http://rag-api:9623
       RAG_MCP_URL: http://rag-mcp:8003
+      MINIO_ENDPOINT: minio:9000
     volumes:
       # 开发模式：挂载源码实现热更新（改代码后只需重启容器）
       - ./start_server_postgres.py:/app/start_server_postgres.py
@@ -115,6 +116,8 @@ services:
       - ./backend/app:/app/backend/app
       - ./backend/alembic:/app/backend/alembic
       - ./backend/alembic.ini:/app/backend/alembic.ini
+      # 共享 workspace（Agent 导出的文件需通过容器后端下载）
+      - ./backend/workspace:/app/backend/workspace
     depends_on:
       postgres:
         condition: service_healthy

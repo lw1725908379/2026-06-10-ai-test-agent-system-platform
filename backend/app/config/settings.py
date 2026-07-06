@@ -174,6 +174,9 @@ class Settings(BaseSettings):
     android_skills_root: str = ".claude/skills/android"
     adb_path: Optional[str] = None  # adb 可执行文件绝对路径（如 C:/Users/xxx/AppData/Local/Android/Sdk/platform-tools/adb.exe）
 
+    # 后端 API 地址（Docker 内为 http://backend:3001，本地为 http://localhost:3001）
+    backend_api_url: str = "http://localhost:3001"
+
     # RAG 服务配置
     rag_api_url: str = "http://localhost:9623"
     rag_mcp_url: str = "http://localhost:8003"

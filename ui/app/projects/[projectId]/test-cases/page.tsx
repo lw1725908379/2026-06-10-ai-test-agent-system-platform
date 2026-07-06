@@ -489,6 +489,7 @@ export default function TestCasesPage() {
           {/* 测试用例列表 */}
           <div className="flex-1">
             <TestCaseList
+              projectId={projectId}
               testCases={testCases}
               loading={loading}
               selectedIds={selectedIds}

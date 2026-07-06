@@ -2,7 +2,8 @@
 // @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZVMWR0YlE9PTpmZmE4MWU3Ng==
 
 import * as React from "react";
-import { Bell, User, LogOut, Settings, HelpCircle } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Bell, User, LogOut, Settings, HelpCircle, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ interface HeaderProps {
 
 export function Header({ title, children }: HeaderProps) {
   const { t } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-6">
@@ -42,6 +44,17 @@ export function Header({ title, children }: HeaderProps) {
         {/* Help */}
         <Button variant="ghost" size="icon">
           <HelpCircle className="h-5 w-5" />
+        </Button>
+
+        {/* Theme Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        >
+          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">切换主题</span>
         </Button>
 
         {/* Language Selector */}

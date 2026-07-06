@@ -34,7 +34,10 @@ workspace_backend = FilesystemBackend(root_dir=workspace_root, virtual_mode=True
 shell_backend = LocalShellBackend(
     root_dir=Path(settings.testcase_workspace_root).resolve(),
     inherit_env=True,
-    env={"PATH": r"C:\Program Files\nodejs;C:\Users\65132\AppData\Roaming\npm;C:\Windows\System32;C:\Windows;"},
+    env={
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "NODE_PATH": "/usr/local/lib/node_modules",
+    },
     timeout=180,
     virtual_mode=True,
 )
@@ -173,7 +176,7 @@ SYSTEM_PROMPT = """
 | Phase 2 | `test-strategy` | 测试策略报告（类型选择 + 优先级 + 深度分配） | 用户确认或默认继续 |
 | Phase 3 | `test-case-design` + `test-data-generator` | 逐模块测试用例 + 具体测试数据 | 每模块含轻量自检 |
 | Phase 4 | `quality-review` | 质量评审报告 | 综合评分 >= 75分，否则回退修改 |
-| Phase 5 | `output-formatter` | 最终交付物（用户指定格式） | - |
+| Phase 5 | `output-formatter` / `export_test_cases_to_excel` | 最终交付物（Markdown/Excel 等） | - |
 
 > 红线：未完成 Phase 1（需求分析）和 Phase 2（测试策略）前，**禁止生成具体测试用例**。
 
@@ -190,14 +193,14 @@ SYSTEM_PROMPT = """
 - "设计用例" / "写用例" -> 仅激活 `test-case-design`
 - "生成测试数据" / "给点数据" -> 仅激活 `test-data-generator`
 - "评审用例" / "质量检查" -> 仅激活 `quality-review`
-- "导出" / "生成Excel" / "转CSV" -> 仅激活 `output-formatter`
+- "导出" / "生成Excel" / "导出为excel表格" / "转Excel" -> 直接调用 `export_test_cases_to_excel` 工具生成 .xlsx 文件，不要返回 JSON 或 Markdown 表格
 
 ## 多 Skill 组合激活指令
 
 用户要求端到端交付时，按 Phase 顺序依次激活：
 
 - "全流程生成" / "生成测试方案" / "从需求到用例" -> Phase 1 -> 2 -> 3 -> 4 -> 5
-- "生成用例并导出Excel" -> `test-case-design` -> `test-data-generator` -> `quality-review` -> `output-formatter`
+- "生成用例并导出Excel" -> `test-case-design` -> `test-data-generator` -> `quality-review` -> 调用 `export_test_cases_to_excel` 工具
 
 ---
 
@@ -293,12 +296,36 @@ update_test_case_tool(
 ```
 
 ## 导出 Excel
+
+当用户要求导出 Excel 时，**必须**调用 `export_test_cases_to_excel` 工具生成 .xlsx 文件，禁止只返回 JSON、Markdown 表格或纯文本列表。
+
+如果用户要导出的是系统中已创建的测试用例，**先调用 `list_test_cases_tool` 查询用例**，再把返回的列表传给 `export_test_cases_to_excel`。
+
+导出成功后，工具会返回 JSON，包含 `download_url` 字段（如 `http://localhost:3000/api/v2/exports/download/xxx.xlsx`）。
+**你必须在回复中展示下载链接**，用 Markdown 格式 `[📥 下载测试用例 Excel 文件](下载链接)` 让用户可以直接点击下载。
+
+完整流程示例：
 ```python
-export_test_cases_to_excel(
-    test_cases=[...],
-    output_path="测试用例.xlsx"
-)
+# 1. 查询系统中的测试用例（优先使用系统接口，不要读取本地文件）
+test_cases_data = list_test_cases_tool(project_identifier="PR-1", page_size=100)
+
+# 2. 导出为 Excel
+result_json = export_test_cases_to_excel(test_cases=test_cases_data["data"])
+# 导出成功后会返回 JSON: {"download_url": "/api/v2/exports/download/xxx.xlsx", ...}
+# 你需要在回复中告知用户文件已就绪，并提供下载链接
 ```
+
+字段映射说明（export_test_cases_to_excel 自动兼容以下键名）：
+- `id` / `identifier` / `用例编号` -> 用例编号
+- `title` / `name` / `用例标题` -> 用例标题
+- `module` / `所属模块` -> 所属模块
+- `type` / `case_type` / `用例类型` -> 用例类型
+- `priority` / `优先级` -> 优先级
+- `preconditions` / `前置条件` -> 前置条件
+- `steps` / `test_case_steps` / `测试步骤` -> 测试步骤（字符串或字典列表均可）
+- `test_data` / `测试数据` -> 测试数据
+- `expected_results` / `expected_result` / `预期结果` -> 预期结果
+- `remarks` / `description` / `tags` / `备注` -> 备注
 
 ---
 
@@ -337,8 +364,8 @@ export_test_cases_to_excel(
    - 禁止一次性生成全部模块的用例文本再输出
 3. **所有模块完成后**：输出完整汇总表 + 质量评审报告（四维度评分）
 4. **格式选择**：
-   - 未指定时 -> 默认 `output-formatter` 的 Markdown 详细格式
-   - 用户说"导出" -> 询问目标工具（禅道/TestRail/Excel/Jira），调用 `output-formatter` 输出对应格式
+   - 未指定时 -> 默认 Markdown 详细格式
+   - 用户说"导出Excel" / "生成Excel" / "导出为excel表格" -> 直接调用 `export_test_cases_to_excel` 工具生成 .xlsx 文件，不要返回 JSON 或 Markdown
 5. **用例密度控制**：P0 >= 3条/模块，P1 >= 3条/核心功能，P2/P3按需补充
 6. **语言一致性**：用户用中文提问，所有输出（包括用例标题、步骤、预期结果）必须使用中文
 6. **保持输出**：定期输出进度信息，避免长时间无响应

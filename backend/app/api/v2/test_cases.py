@@ -7,6 +7,7 @@
 
 from datetime import datetime
 from typing import Optional, Union, Any
+from urllib.parse import quote
 from uuid import UUID
 
 from fastapi import APIRouter, Query, status, Request, Response, Body
@@ -24,7 +25,7 @@ from app.api.deps import (
 from app.schemas.test_case import (
     TestCaseCreate, TestCaseUpdate, TestCaseInfo, TestCaseMinifiedInfo,
     BulkTestCaseRequest, BulkEditWithOperationsRequest, BulkDeleteRequest,
-    BulkOperationResponse, ExportBDDRequest, ExportBDDResponse,
+    BulkOperationResponse, ExportBDDRequest, ExportExcelRequest, ExportBDDResponse,
     ExportStatusResponse, TestCaseHistoryResponse
 )
 from app.schemas.common import SuccessResponse, MessageResponse
@@ -446,6 +447,38 @@ async def export_bdd_test_cases(
     return export_result
 
 
+# ============ Excel 导出接口 ============
+
+@router.post(
+    "/test-cases/export-excel",
+    summary="导出 Excel 测试用例",
+    description="将选中的测试用例导出为 Excel 文件",
+)
+async def export_excel_test_cases(
+    project_identifier: str,
+    data: ExportExcelRequest,
+    export_service: ExportServiceDep,
+) -> StreamingResponse:
+    """
+    导出 Excel 测试用例
+
+    - **test_case_ids**: 要导出的测试用例标识符列表
+
+    直接返回 .xlsx 文件流
+    """
+    file_content, filename = await export_service.export_test_cases_to_excel(
+        project_identifier, data.test_case_ids
+    )
+    # RFC 5987: 支持中文文件名
+    disposition = f"attachment; filename*=UTF-8''{quote(filename, safe='')}" \
+        if not filename.isascii() else f"attachment; filename={filename}"
+    return StreamingResponse(
+        iter([file_content]),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": disposition}
+    )
+
+
 # ============ 测试用例历史接口 ============
 
 @router.get(
@@ -516,8 +549,11 @@ async def download_export(
     返回 .feature 文件或 .zip 压缩包
     """
     file_content, filename, content_type = await export_service.download_export(export_id)
+    # RFC 5987: 支持中文文件名
+    disposition = f"attachment; filename*=UTF-8''{quote(filename, safe='')}" \
+        if not filename.isascii() else f"attachment; filename={filename}"
     return StreamingResponse(
         iter([file_content]),
         media_type=content_type,
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": disposition}
     )

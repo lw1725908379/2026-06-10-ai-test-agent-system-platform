@@ -51,20 +51,37 @@ from app.models.web_test import WebTest, WebTestRun, WebTestResult
 from app.models.web_function import WebFunction, WebSubFunction
 from app.models.android_test import AndroidTest, AndroidTestRun, AndroidTestResult
 
-# Monkey patch deepagents message reducer to fix TypeError when state is None
+# Monkey patch deepagents message reducer to fix TypeError when state/writes is None.
+# deepagents < 0.6.12 does not handle `state=None` during DeltaChannel replay,
+# which happens when the earliest checkpoint of a thread did not seed messages: [].
 try:
-    import deepagents._messages_reducer
+    import deepagents._messages_reducer as _mr
 
-    original_reducer = deepagents._messages_reducer._messages_delta_reducer
+    original_reducer = _mr._messages_delta_reducer
 
 
     def patched_reducer(state, writes):
+        # Match the fix introduced in deepagents 0.6.12.
         if state is None:
             state = []
+        if writes is None:
+            writes = []
         return original_reducer(state, writes)
 
 
-    deepagents._messages_reducer._messages_delta_reducer = patched_reducer
+    _mr._messages_delta_reducer = patched_reducer
+
+    # Defense in depth: also guard convert_to_messages so any captured reference
+    # to the reducer still sees a None-safe converter.
+    _original_convert = _mr.convert_to_messages
+
+
+    def _safe_convert_to_messages(messages):
+        return _original_convert(messages or [])
+
+
+    _mr.convert_to_messages = _safe_convert_to_messages
+
     print("🩹 Successfully applied monkey patch for deepagents message reducer")
 except Exception as e:
     print(f"⚠️ Failed to apply monkey patch: {e}")
@@ -108,7 +125,7 @@ async def lifespan(app: FastAPI):
     """
     # 启动时
     # 连接 MongoDB
-    # await MongoDB.connect()
+    await MongoDB.connect()
 
     # 创建数据库表（开发环境）
     if settings.debug:
@@ -129,7 +146,7 @@ async def lifespan(app: FastAPI):
 
     # 关闭时
     # 断开 MongoDB 连接
-    # await MongoDB.disconnect()
+    await MongoDB.disconnect()
 
     # 关闭定时调度器
     scheduler.shutdown()

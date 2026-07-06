@@ -1,7 +1,7 @@
 """
 测试用例管理工具
 
-提供测试用例创建、更新和批量操作的 HTTP 接口调用工具。
+提供测试用例创建、更新、查询和批量操作的 HTTP 接口调用工具。
 """
 
 import logging
@@ -14,10 +14,11 @@ from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
-API_BASE_URL = f"http://localhost:{settings.app_port}"
+API_BASE_URL = settings.backend_api_url
 API_PREFIX = settings.api_prefix
 
 # pragma: no cover  MC80OmFIVnBZMlhsaUpqbWxvYzZWa05tU1E9PTphNDAyNDhmZQ==
+
 
 def _get_api_url(path: str) -> str:
     """构建完整的 API URL"""
@@ -467,3 +468,76 @@ async def batch_create_test_cases_tool(
             "error": str(e),
             "message": f"批量创建测试用例失败: {str(e)}"
         }
+
+
+async def _list_test_cases_impl(
+    project_identifier: str,
+    page_size: int = 100,
+    folder_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """查询测试用例列表的内部实现"""
+    params: dict[str, Any] = {"page_size": page_size, "minify": False}
+    if folder_id:
+        url = _get_api_url(f"/projects/{project_identifier}/folders/{folder_id}/test-cases")
+    else:
+        url = _get_api_url(f"/projects/{project_identifier}/test-cases")
+
+    all_test_cases: list[dict[str, Any]] = []
+    page = 1
+
+    while True:
+        params["p"] = page
+        response_data = await _make_http_request(method="GET", url=url, params=params)
+
+        if not response_data.get("success"):
+            return {
+                "success": False,
+                "error": "API 返回失败",
+                "message": "查询测试用例失败",
+                "data": None,
+            }
+
+        data = response_data.get("data", []) or response_data.get("test_cases", [])
+        all_test_cases.extend(data)
+
+        info = response_data.get("info", {})
+        total = info.get("total", 0)
+        if len(all_test_cases) >= total or not data:
+            break
+        page += 1
+
+    return {
+        "success": True,
+        "data": all_test_cases,
+        "message": f"共查询到 {len(all_test_cases)} 条测试用例",
+    }
+
+
+@tool
+async def list_test_cases_tool(
+    project_identifier: str,
+    page_size: int = 100,
+    folder_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """
+    查询项目下的测试用例列表。
+
+    当用户要求导出 Excel、查看已创建用例、或需要基于已有用例继续操作时，
+    优先调用此工具获取系统中的测试用例数据，而不是读取本地文件。
+
+    Args:
+        project_identifier: 项目标识符，如 'PR-1'
+        page_size: 每页数量，默认 100
+        folder_id: 文件夹 UUID（可选），不填则查询整个项目
+
+    Returns:
+        dict: 包含测试用例列表的字典
+    """
+    try:
+        return await _list_test_cases_impl(
+            project_identifier=project_identifier,
+            page_size=page_size,
+            folder_id=folder_id,
+        )
+    except Exception as e:
+        return {"success": False, "error": str(e), "message": f"查询测试用例失败: {str(e)}"}

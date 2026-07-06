@@ -309,6 +309,15 @@ class ExportBDDRequest(BaseModel):
         return self
 
 
+class ExportExcelRequest(BaseModel):
+    """导出 Excel 测试用例请求模型"""
+    test_case_ids: list[str] = Field(
+        ...,
+        min_length=1,
+        description="要导出的测试用例标识符列表"
+    )
+
+
 class ExportBDDResponse(BaseResponse):
     """导出 BDD 测试用例响应模型"""
     success: bool = Field(default=True)

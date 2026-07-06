@@ -147,3 +147,70 @@ export function bulkUpdateTestCases(
   });
 }
 
+// ==================== 导出相关 ====================
+
+interface ExportBDDResponse {
+  success: boolean;
+  export_id: string;
+  status: string;
+  status_url: string;
+}
+
+interface ExportStatusResponse {
+  success: boolean;
+  export_id: string;
+  status: string;
+  download_url?: string;
+  error_message?: string;
+}
+
+// 启动 BDD 导出任务
+export function exportBDDTestCases(
+  projectId: string,
+  testCaseIds: string[],
+  combineIntoOne: boolean,
+  combinedFeature?: string,
+  combinedBackground?: string
+) {
+  return apiClient.post<ExportBDDResponse>(
+    `/projects/${projectId}/test-cases/export-bdd`,
+    {
+      test_case_ids: testCaseIds,
+      combine_into_one: combineIntoOne,
+      combined_feature: combinedFeature,
+      combined_background: combinedBackground,
+    }
+  );
+}
+
+// 查询导出任务状态
+export function getExportStatus(exportId: string) {
+  return apiClient.get<ExportStatusResponse>(`/exports/${exportId}/status`);
+}
+
+// 下载导出文件
+export function downloadExport(exportId: string): Promise<Blob> {
+  return fetch(`/api/v2/exports/${exportId}/download`).then((res) => {
+    if (!res.ok) {
+      throw new Error(`下载失败: ${res.status}`);
+    }
+    return res.blob();
+  });
+}
+
+// 导出 Excel 测试用例
+export function exportExcelTestCases(
+  projectId: string,
+  testCaseIds: string[]
+): Promise<Blob> {
+  return fetch(`/api/v2/projects/${projectId}/test-cases/export-excel`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ test_case_ids: testCaseIds }),
+  }).then((res) => {
+    if (!res.ok) {
+      throw new Error(`Excel 导出失败: ${res.status}`);
+    }
+    return res.blob();
+  });
+}

@@ -5,6 +5,10 @@
   2. 后台 (FastAPI)        — 端口 3001
   3. 前端 (Next.js)        — 端口 3000
   4. GitNexus              — 端口 5173
+
+用法：
+  1. 激活虚拟环境: .venv\Scripts\activate
+  2. 运行本脚本:   python start_all.py
 """
 
 import os
@@ -15,6 +19,36 @@ import time
 ROOT = os.path.dirname(os.path.abspath(__file__))
 VENV_ACTIVATE = os.path.join(ROOT, ".venv", "Scripts", "activate.bat")
 PYTHON = os.path.join(ROOT, ".venv", "Scripts", "python.exe")
+
+
+def check_prerequisites():
+    """检查前置条件"""
+    errors = []
+
+    # 检查虚拟环境
+    if not os.path.exists(PYTHON):
+        errors.append(f"虚拟环境 Python 不存在: {PYTHON}\n  请先运行: python -m venv .venv")
+    if not os.path.exists(VENV_ACTIVATE):
+        errors.append(f"虚拟环境激活脚本不存在: {VENV_ACTIVATE}\n  请先运行: python -m venv .venv")
+
+    # 检查前端依赖
+    if not os.path.exists(os.path.join(ROOT, "ui", "node_modules")):
+        errors.append(f"前端依赖未安装\n  请运行: cd ui && npm install")
+
+    # 检查 GitNexus 依赖
+    if not os.path.exists(os.path.join(ROOT, "gitnexus-web", "node_modules")):
+        errors.append(f"GitNexus 依赖未安装\n  请运行: cd gitnexus-web && npm install")
+
+    if errors:
+        print("=" * 55)
+        print("  前置条件检查失败：")
+        print()
+        for err in errors:
+            print(f"  ❌ {err}")
+        print()
+        print("  请解决以上问题后重试")
+        print("=" * 55)
+        sys.exit(1)
 
 
 def start_server(title, cmd, cwd=None, use_venv=False):
@@ -38,6 +72,8 @@ def main():
     print("=" * 55)
     print()
 
+    check_prerequisites()
+
     # 1. 大模型层 (LangGraph)
     print("[1/4] 大模型层 (LangGraph) — http://localhost:2026")
     start_server(
@@ -45,7 +81,7 @@ def main():
         f'"{PYTHON}" start_server_postgres.py',
         use_venv=True,
     )
-    time.sleep(2)
+    time.sleep(5)
 
     # 2. 后台 (FastAPI)
     print("[2/4] 后台 (FastAPI) — http://localhost:3001/docs")
@@ -55,7 +91,7 @@ def main():
         cwd=os.path.join(ROOT, "backend"),
         use_venv=True,
     )
-    time.sleep(2)
+    time.sleep(3)
 
     # 3. 前端 (Next.js)
     print("[3/4] 前端 (Next.js) — http://localhost:3000")
@@ -64,7 +100,7 @@ def main():
         "npm run dev",
         cwd=os.path.join(ROOT, "ui"),
     )
-    time.sleep(2)
+    time.sleep(3)
 
     # 4. GitNexus
     print("[4/4] GitNexus — http://localhost:5173/gitnexus-web/")

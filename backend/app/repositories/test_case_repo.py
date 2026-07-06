@@ -73,6 +73,37 @@ class TestCaseRepository(BaseRepository[TestCase]):
         )
         return result.scalar_one_or_none()
     
+    async def get_by_identifiers(
+        self,
+        project_id: UUID,
+        identifiers: list[str],
+    ) -> list[TestCase]:
+        """
+        根据标识符列表批量获取项目下的测试用例
+
+        Args:
+            project_id: 项目 ID
+            identifiers: 测试用例标识符列表 (TC-xxx)
+
+        Returns:
+            list[TestCase]: 测试用例列表
+        """
+        if not identifiers:
+            return []
+
+        result = await self.session.execute(
+            select(TestCase)
+            .options(selectinload(TestCase.steps))
+            .options(selectinload(TestCase.tags))
+            .where(
+                and_(
+                    TestCase.project_id == project_id,
+                    TestCase.identifier.in_(identifiers),
+                )
+            )
+        )
+        return list(result.scalars().unique().all())
+
     async def get_by_project(
         self,
         project_id: UUID,

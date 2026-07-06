@@ -7,7 +7,7 @@ API 路由模块
 from fastapi import APIRouter
 # pragma: no cover  MC8yOmFIVnBZMlhsaUpqbWxvYzZkSGx0UWc9PTo1Nzk1OTU0Mw==
 
-from .v2 import projects, folders, test_cases, test_runs, test_results, attachments, configurations, test_plans, documents, api_tests, api_tests_extended, api_endpoints, scenarios, web_tests, web_functions, pentests, mcp_proxy, android_tests
+from .v2 import projects, folders, test_cases, test_runs, test_results, attachments, configurations, test_plans, documents, api_tests, api_tests_extended, api_endpoints, scenarios, web_tests, web_functions, pentests, mcp_proxy, android_tests, ai, exports_download
 
 # 创建 API v2 路由
 api_router = APIRouter(prefix="/api/v2")
@@ -36,5 +36,7 @@ api_router.include_router(android_tests.router, tags=["Android 测试管理"])
 api_router.include_router(android_tests.devices_router, tags=["Android 设备管理"])
 api_router.include_router(pentests.router, tags=["渗透测试管理"])
 api_router.include_router(mcp_proxy.router, tags=["MCP 代理"])
+api_router.include_router(ai.router, tags=["AI 辅助"])
+api_router.include_router(exports_download.router, tags=["导出下载"])
 
 __all__ = ["api_router"]

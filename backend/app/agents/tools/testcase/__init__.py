@@ -16,6 +16,7 @@ from app.agents.tools.testcase.testcase_tools import (
     create_test_case_tool,
     update_test_case_tool,
     batch_create_test_cases_tool,
+    list_test_cases_tool,
 )
 
 from app.agents.tools.testcase.document_tools import (
@@ -36,6 +37,7 @@ TESTCASE_TOOLS = [
     create_test_case_tool,
     update_test_case_tool,
     batch_create_test_cases_tool,
+    list_test_cases_tool,
 ]
 
 DOCUMENT_TOOLS = [
@@ -49,7 +51,7 @@ EXCEL_TOOLS = [
     export_test_cases_to_excel,
 ]
 
-ALL_LOCAL_TOOLS = TESTCASE_TOOLS + DOCUMENT_TOOLS + RAG_TOOLS # + EXCEL_TOOLS
+ALL_LOCAL_TOOLS = TESTCASE_TOOLS + DOCUMENT_TOOLS + RAG_TOOLS + EXCEL_TOOLS
 
 
 async def get_local_tools() -> List[BaseTool]:
@@ -85,6 +87,7 @@ __all__ = [
     "create_test_case_tool",
     "update_test_case_tool",
     "batch_create_test_cases_tool",
+    "list_test_cases_tool",
     # 文档解析
     "parse_document_from_url",
     # Excel 导出
