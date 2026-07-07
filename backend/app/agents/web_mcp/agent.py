@@ -13,6 +13,7 @@ Web 自动化测试智能体
 - Tools: 原子操作（数据库、存储、MCP）
 """
 
+import os
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -440,13 +441,16 @@ async def make_agent() -> AsyncIterator[Pregel]:
     context_middleware = WebContextInjectionMiddleware()
 
     # 创建 MCP 客户端连接到 Playwright 服务器
+    # 平台兼容的 MCP 传输命令
+    if os.name == "nt":
+        mcp_shell = {"command": "cmd", "args": ["/c", f"cd {settings.web_mcp_root} & ", "npx", "playwright", "run-test-mcp-server"]}
+    else:
+        mcp_shell = {"command": "bash", "args": ["-c", f"cd {settings.web_mcp_root} && npx playwright run-test-mcp-server"]}
     client = MultiServerMCPClient(
         {
             "web_mcp": {
                 "transport": "stdio",
-                "command": r"cmd",
-                "args": ["/c", f"cd {settings.web_mcp_root} & ",
-                         "npx", "playwright", "run-test-mcp-server"],
+                **mcp_shell,
             }
         }
     )

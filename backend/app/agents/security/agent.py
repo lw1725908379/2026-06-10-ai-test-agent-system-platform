@@ -51,7 +51,7 @@ shell_backend = LocalShellBackend(
     root_dir=Path(settings.security_workspace_root).resolve(),
     inherit_env=True,
     env={
-        "PATH": r"C:\Program Files\nodejs;C:\Users\65132\AppData\Roaming\npm;C:\Windows\System32;C:\Windows;",
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
     },
     timeout=300,
     virtual_mode=False,

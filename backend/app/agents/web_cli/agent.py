@@ -47,7 +47,7 @@ skills_backend = FilesystemBackend(root_dir=skills_root, virtual_mode=True)
 workspace_backend = FilesystemBackend(root_dir=workspace_root, virtual_mode=True)
 shell_backend = LocalShellBackend(root_dir=Path(settings.web_cli_workspace_root).resolve(),
                                   inherit_env=True,
-                                  env={"PATH": r"C:\Program Files\nodejs;C:\Users\65132\AppData\Roaming\npm;C:\Windows\System32;C:\Windows;"},
+                                  env={"PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
                                   timeout=180,
                                   virtual_mode=True)
 composite_backend = CompositeBackend(

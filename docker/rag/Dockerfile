@@ -62,8 +62,8 @@ WORKDIR /app
 # 创建目录
 RUN mkdir -p /app/storage /app/inputs
 
-# 复制 .env 文件
-COPY rag/.env /app/.env
+# 复制 .env 模板（构建时不带真实密钥，运行时通过 docker-compose 注入环境变量）
+COPY .env.example /app/.env
 
 # 复制启动脚本
 COPY docker/rag/entrypoint.sh /app/entrypoint.sh

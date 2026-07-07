@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     app_name: str = "测试管理系统"
     app_version: str = "1.0.0"
     app_port: int = 3001
-    debug: bool = False
+    debug: bool = True
     api_prefix: str = "/api/v2"
     
     # PostgreSQL 数据库配置
@@ -142,14 +142,13 @@ class Settings(BaseSettings):
     perf_skills_root: str = "backend/app/agents/perf/agent_skills"
 
     # 接口测试工作目录配置
-    api_workspace_root: str
-    # api_mcp_root: str = "backend/mcp/api"
-    api_skills_root: str
+    api_workspace_root: str = "backend/workspace/api"
+    api_skills_root: str = ".claude/skills"
 
     # Web 测试工作目录配置
-    web_mcp_workspace_root: str
-    web_mcp_root: str
-    web_mcp_skills_root: str
+    web_mcp_workspace_root: str = "backend/workspace/web_mcp"
+    web_mcp_root: str = "backend/workspace/web_mcp"
+    web_mcp_skills_root: str = ".claude/skills"
 # pylint: disable  Mi80OmFIVnBZMlhsaUpqbWxvYzZXa2RMUWc9PTo5NTM4ODYyZA==
 
     # Web CLI 测试工作目录配置

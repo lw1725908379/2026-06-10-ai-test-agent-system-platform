@@ -45,7 +45,7 @@ shell_backend = LocalShellBackend(
     root_dir=Path(settings.android_workspace_root).resolve(),
     inherit_env=True,
     env={
-        "PATH": r"C:\Program Files\nodejs;C:\Users\65132\AppData\Roaming\npm;C:\Windows\System32;C:\Windows;",
+        "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
         "ANDROID_WORKSPACE_ROOT": str(workspace_root),
     },
     timeout=300,
