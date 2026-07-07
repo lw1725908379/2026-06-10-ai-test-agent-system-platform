@@ -1,3 +1,4 @@
+import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 "use client";
 // TODO  MC80OmFIVnBZMlhsaUpqbWxvYzZkbTFMZVE9PTpiNTIzYzRlZA==
 
@@ -72,7 +73,7 @@ export function AIChatDialog({
   }, [open]);
 
   const deploymentUrl =
-    process.env.NEXT_PUBLIC_LANGGRAPH_API_URL || "http://localhost:2025";
+    getLangGraphApiUrl();
   const apiKey = process.env.NEXT_PUBLIC_LANGSMITH_API_KEY || "";
 
   return (

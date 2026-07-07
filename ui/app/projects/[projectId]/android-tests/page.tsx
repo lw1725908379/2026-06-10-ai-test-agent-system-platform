@@ -1,3 +1,4 @@
+import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 "use client";
 // FIXME  MC80OmFIVnBZMlhsaUpqbWxvYzZWV1JVTUE9PTpiMTZmZmVmYg==
 
@@ -653,7 +654,7 @@ ${selectedDevice ? `**Device UDID**: ${selectedDevice.udid}` : ""}
               )}
             >
               <ClientProvider
-                deploymentUrl={process.env.NEXT_PUBLIC_LANGGRAPH_API_URL || "http://localhost:2025"}
+                deploymentUrl={getLangGraphApiUrl()}
                 apiKey={process.env.NEXT_PUBLIC_LANGSMITH_API_KEY || ""}
               >
                 <AIChatContainer

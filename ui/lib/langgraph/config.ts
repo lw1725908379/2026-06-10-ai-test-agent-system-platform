@@ -7,6 +7,16 @@ export interface StandaloneConfig {
 
 const CONFIG_KEY = "deep-agent-config";
 
+/**
+ * LangGraph API URL 运行时计算
+ * 使用 window.location.origin 确保任何域名/IP 都能正确拼接
+ * 替代编译时注入的 NEXT_PUBLIC_LANGGRAPH_API_URL（localhost 硬编码问题）
+ */
+export function getLangGraphApiUrl(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.origin + "/api/langgraph";
+}
+
 export function getConfig(): StandaloneConfig | null {
   if (typeof window === "undefined") return null;
 
