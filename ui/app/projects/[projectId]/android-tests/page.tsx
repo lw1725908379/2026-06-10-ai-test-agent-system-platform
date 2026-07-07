@@ -1,6 +1,6 @@
-import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 "use client";
 // FIXME  MC80OmFIVnBZMlhsaUpqbWxvYzZWV1JVTUE9PTpiMTZmZmVmYg==
+import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 
 import * as React from "react";
 import { useParams } from "next/navigation";

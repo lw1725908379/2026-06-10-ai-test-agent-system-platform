@@ -1,6 +1,6 @@
-import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 "use client";
 // @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZRamxpYkE9PTo2NzNmNDRjOA==
+import { getLangGraphApiUrl } from "@/lib/langgraph/config";
 
 import * as React from "react";
 import { useParams } from "next/navigation";
