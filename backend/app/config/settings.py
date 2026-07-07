@@ -157,12 +157,12 @@ class Settings(BaseSettings):
     web_cli_skills_root: str = ".claude/skills/web_cli"
 
     # Web Chrome 测试工作目录配置
-    web_chrome_workspace_root: str = "C:/Users/65132/Desktop/workspace/testing/ai-test-management/backend/workspace/web_chrome"
+    web_chrome_workspace_root: str = "backend/workspace/web_chrome"
     web_chrome_mcp_root: str = "backend/mcp/web_chrome"
-    web_chrome_skills_root: str = "C:/Users/65132/Desktop/workspace/testing/ai-test-management/backend/workspace/web_chrome"
+    web_chrome_skills_root: str = "backend/workspace/web_chrome"
 
     # 测试用例工作目录配置
-    testcase_workspace_root: str = "C:/Users/65132/Desktop/workspace/testing/ai-test-management/backend/workspace/testcase"
+    testcase_workspace_root: str = "backend/workspace/testcase"
     testcase_skills_root: str = ".claude/skills"
 
     # 渗透测试工作目录配置
