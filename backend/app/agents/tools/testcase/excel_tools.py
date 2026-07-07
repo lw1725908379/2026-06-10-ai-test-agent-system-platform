@@ -307,14 +307,17 @@ def export_test_cases_to_excel(
         MinIOClient.upload_bytes(
             object_name=object_name,
             data=buf.getvalue(),
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            content_type="application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet",
         )
         # 下载通过后端 API 代理（从 MinIO 读取后下发）
-        download_url = f"http://localhost:3000/api/v2/exports/download/{filename}"
+        # 使用环境变量中的公网 URL（避免 localhost 硬编码）
+        public_base = settings.backend_public_url or "http://localhost:3000"
+        download_url = f"{public_base}/api/v2/exports/download/{filename}"
     except Exception as e:
         # MinIO 上传失败时回退到本地文件
         wb.save(str(output_path))
-        download_url = f"http://localhost:3000/api/v2/exports/download/{filename}"
+        public_base = settings.backend_public_url or "http://localhost:3000"
+        download_url = f"{public_base}/api/v2/exports/download/{filename}"
         logger.warning(f"MinIO 上传失败，回退到本地文件: {e}")
 
     return json.dumps({

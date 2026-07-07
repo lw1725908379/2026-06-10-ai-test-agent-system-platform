@@ -175,6 +175,8 @@ class Settings(BaseSettings):
 
     # 后端 API 地址（Docker 内为 http://backend:3001，本地为 http://localhost:3001）
     backend_api_url: str = "http://localhost:3001"
+    # 后端服务对外可访问的公网 URL（Agent 工具返回下载链接给浏览器时使用）
+    backend_public_url: Optional[str] = None  # 如 http://45.76.219.40:3000，未设置则回退到 backend_api_url
 
     # RAG 服务配置
     rag_api_url: str = "http://localhost:9623"
