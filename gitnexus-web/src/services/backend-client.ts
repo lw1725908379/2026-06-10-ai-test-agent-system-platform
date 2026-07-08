@@ -204,10 +204,25 @@ export function streamSSE<T = unknown>(url: string, handlers: SSEHandlers<T>): A
 
 // ── Configuration ──────────────────────────────────────────────────────────
 
-let _backendUrl = 'http://localhost:4747';
+/** 动态计算后端 URL：浏览器中根据当前域名自动适配，避免 localhost 硬编码问题 */
+function getDefaultBackendUrl(): string {
+  if (typeof window === 'undefined') return 'http://localhost:4747';
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:4747';
+  return `http://${host}:4747`;
+}
+
+let _backendUrl = getDefaultBackendUrl();
 
 /** MCP proxy runs on a separate backend port (FastAPI). */
-const MCP_BACKEND_URL = 'http://localhost:8000';
+function getDefaultMCPUrl(): string {
+  if (typeof window === 'undefined') return 'http://localhost:8000';
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:8000';
+  return `http://${host}:8000`;
+}
+
+const MCP_BACKEND_URL = getDefaultMCPUrl();
 
 /**
  * Validate that a backend URL is a safe http:// or https:// origin before
