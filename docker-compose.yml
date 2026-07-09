@@ -163,7 +163,7 @@ services:
     volumes:
       - ./:/repo
     environment:
-      - GITNEXUS_PORT=4748
+      - GITNEXUS_PORT=4747
 
   gitnexus-web:
     build:

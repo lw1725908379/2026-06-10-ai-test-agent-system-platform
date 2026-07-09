@@ -30,6 +30,15 @@ export default defineConfig({
     fs: {
       allow: ['..'],
     },
+    // In Docker, disable file watching to prevent HMR reload loops
+    watch: {
+      ignored: ['!**/src/**'],
+      usePolling: false,
+    },
+    hmr: {
+      // Disable HMR overlay to avoid connection error popups
+      overlay: false,
+    },
   },
 });
 // FIXME  MS8yOmFIVnBZMlhsaUpqbWxvYzZSVnBCZWc9PTowNzJjMGI3Yw==
