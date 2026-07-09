@@ -9,6 +9,9 @@ RUN npm ci
 # 复制源码
 COPY ui/ .
 
+# 生产构建（预编译所有页面，避免运行时编译卡顿）
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
