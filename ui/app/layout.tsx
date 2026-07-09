@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 // @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZZMkZxVUE9PTo1YzQ0ODE2ZA==
 
 export const metadata: Metadata = {
@@ -22,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className="font-sans" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
