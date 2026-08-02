@@ -348,7 +348,43 @@ await page.getByRole('button', { name: 'Login' }).click();
 await expect(page).toHaveURL('/dashboard');
 ```
 
+#### Token/Session 失效（高频）
+**症状**：跳转登录页 / 401 错误 / 页面加载出登录界面 / 元素加载失败
+**根因**：SESSION_TOKEN 过期 / cookie 未注入 / 登录态丢失 / token 被清
+**识别**：
+1. 检查页面 URL 是否跳转到 /login 或登录页
+2. 用 browser_snapshot 看是否出现"登录/注册"界面
+3. 检查 cookie 是否还有效（context.addCookies 的 token）
+**修复**：
+1. 检查 SESSION_TOKEN 常量是否为最新值
+2. 重新注入 cookie：`context.addCookies([{name:'vag_session', value:NEW_TOKEN, domain:'.xxx.com', path:'/'}])`
+3. 若 token 已过期，**输出询问用户**：请提供新的 SESSION_TOKEN
+4. 修复后 reload 页面再操作
+
 ### 5. **Application Changes**
+
+#### Modal Overlay 弹窗遮挡（高频）
+**症状**：元素 toBeVisible 通过但 click 卡住/无反应 / 点击被拦截
+**根因**：公告弹窗、活动弹窗、登录弹窗等浮层遮挡目标元素
+**识别**：
+1. 用 browser_snapshot 检查当前页面是否有 modal / 弹窗浮层
+2. 检查目标元素是否被遮挡（z-index / 覆盖）
+**修复**：
+1. 先关闭弹窗再操作目标元素（点击关闭按钮 / 按 Escape）
+2. 在 beforeEach 里统一处理弹窗（进入页面后先关所有弹窗）
+3. 示例：
+```typescript
+// Before (broken)
+await page.getByRole('button', { name: '创建' }).click(); // 被弹窗遮挡
+
+// After (fixed)
+// 先关闭公告/活动弹窗
+const closeBtn = page.locator('[data-btn-id="AnnouncementClose"]');
+await closeBtn.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+await closeBtn.click().catch(() => {});
+// 再操作目标元素
+await page.getByRole('button', { name: '创建' }).click();
+```
 
 #### UI Redesign
 **Symptoms**: Multiple selectors broken, layout changed
