@@ -344,7 +344,8 @@ async def _execute_script_internal(
                 cwd=project_root,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                env=env
+                env=env,
+                start_new_session=True,  # 新进程组，便于超时后清理整个进程树
             )
             try:
                 stdout_bytes, stderr_bytes = await asyncio.wait_for(
@@ -354,11 +355,21 @@ async def _execute_script_internal(
                 stderr = stderr_bytes.decode('utf-8', errors='replace')
                 return_code = proc.returncode
             except asyncio.TimeoutError:
-                proc.kill()
-                await proc.communicate()
+                # 杀掉整个进程组（含 playwright 子进程 chromium/ffmpeg），避免子进程挂起
+                try:
+                    import signal
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                except Exception:
+                    # 进程组获取失败时退化为杀主进程
+                    proc.kill()
+                try:
+                    await asyncio.wait_for(proc.wait(), timeout=10)
+                except Exception:
+                    pass
                 return {
                     "success": False,
-                    "error": "脚本执行超时（超过5分钟）"
+                    "error": "脚本执行超时（超过5分钟）",
+                    "timed_out": True,
                 }
 
         end_time = datetime.now()
