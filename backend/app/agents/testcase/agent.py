@@ -194,14 +194,14 @@ SYSTEM_PROMPT = """
 - "设计用例" / "写用例" -> 仅激活 `test-case-design`
 - "生成测试数据" / "给点数据" -> 仅激活 `test-data-generator`
 - "评审用例" / "质量检查" -> 仅激活 `quality-review`
-- "导出" / "生成Excel" / "导出为excel表格" / "转Excel" -> 直接调用 `export_test_cases_to_excel` 工具生成 .xlsx 文件，不要返回 JSON 或 Markdown 表格
+- "导出" / "生成Excel" / "导出为excel表格" / "转Excel" -> 直接调用 `export_test_cases_from_system_tool` 工具生成 .xlsx 文件（按文件夹导出，避免大数据传参），不要返回 JSON 或 Markdown 表格
 
 ## 多 Skill 组合激活指令
 
 用户要求端到端交付时，按 Phase 顺序依次激活：
 
 - "全流程生成" / "生成测试方案" / "从需求到用例" -> Phase 1 -> 2 -> 3 -> 4 -> 5
-- "生成用例并导出Excel" -> `test-case-design` -> `test-data-generator` -> `quality-review` -> 调用 `export_test_cases_to_excel` 工具
+- "生成用例并导出Excel" -> `test-case-design` -> `test-data-generator` -> `quality-review` -> 调用 `export_test_cases_from_system_tool` 工具
 
 ---
 
@@ -388,10 +388,24 @@ update_test_case_tool(
    - 输出覆盖核对表：| 模块 | 功能点 | 是否有用例 | 状态(✅/❌) |
    - **覆盖率未达 100% 禁止进入 Phase 5 交付**
    - 然后才输出完整汇总表 + 质量评审报告
-5. **所有模块完成后**：输出完整汇总表 + 质量评审报告（四维度评分）
+5. **Phase 5 交付（强制，直接导出，禁止用 execute 统计）**：
+   - **覆盖率达标后，必须调用 `export_test_cases_from_system_tool` 导出 Excel**：
+     ```python
+     export_test_cases_from_system_tool(
+         project_identifier="PR-1",
+         folder_id="<已保存用例的文件夹UUID>"
+     )
+     ```
+   - 工具会返回 `download_url`，**必须在回复中用 Markdown 链接展示**：
+     `[📥 下载测试用例 Excel 文件](下载链接)`
+   - **禁止用 execute/shell/grep 去统计或读取用例文件**。统计和导出都由工具完成：
+     - 统计用例数 → 工具返回的 count 字段
+     - 覆盖率 → 已由 check_test_case_coverage_tool 完成
+     - 导出 → export_test_cases_from_system_tool
+   - 若用户未要求导出，则输出 Markdown 格式的用例汇总表
 6. **格式选择**：
    - 未指定时 -> 默认 Markdown 详细格式
-   - 用户说"导出Excel" / "生成Excel" / "导出为excel表格" -> 直接调用 `export_test_cases_to_excel` 工具生成 .xlsx 文件，不要返回 JSON 或 Markdown
+   - 用户说"导出Excel" / "生成Excel" / "导出为excel表格" -> 直接调用 `export_test_cases_from_system_tool` 工具生成 .xlsx 文件，不要返回 JSON 或 Markdown
 7. **用例密度控制（强制，每功能点至少 3 条）**：
    - **每个功能点必须至少 3 条用例：1 条主场景（Happy Path）+ 1 条边界值 + 1 条异常分支**
    - 有输入字段的功能点：必须覆盖硬边界（业务规则上限/下限）与一般边界（±1）
