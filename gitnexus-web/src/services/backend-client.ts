@@ -798,6 +798,57 @@ export const startAnalyze = async (request: {
   return response.json() as Promise<{ jobId: string; status: string }>;
 };
 
+/**
+ * Upload a local folder (browser files) to the backend for analysis.
+ * Uses the multipart /api/analyze/upload endpoint, which is the correct
+ * way to analyze local code in a Docker-deployed backend (the container
+ * cannot access host filesystem paths).
+ *
+ * The backend expects:
+ *   - a `manifest` field FIRST: JSON array of webkitRelativePaths
+ *     (in the same order as the files)
+ *   - then each file as a `files` part (filename = its basename)
+ * Manifest must precede all file parts, and every path must share the
+ * same top-level folder.
+ */
+export const uploadAnalyze = async (
+  files: File[],
+  options?: { force?: boolean; embeddings?: boolean },
+): Promise<{ jobId: string; status: string }> => {
+  // Skip files without a relative path (or at root, no folder prefix)
+  const validFiles = files.filter((f) => {
+    const rel = f.webkitRelativePath;
+    return rel && rel.split('/').length >= 2;
+  });
+  if (validFiles.length === 0) {
+    throw new Error('所选文件夹没有可上传的文件，请确认选择了整个文件夹');
+  }
+
+  const manifest = validFiles.map((f) => f.webkitRelativePath);
+
+  const formData = new FormData();
+  // Manifest MUST be appended before any file parts
+  formData.append('manifest', JSON.stringify(manifest));
+  for (const file of validFiles) {
+    const name = file.webkitRelativePath.split('/').pop() || file.name;
+    formData.append('files', file, name);
+  }
+  if (options?.force) formData.append('force', 'true');
+  if (options?.embeddings) formData.append('embeddings', 'true');
+
+  const response = await fetchWithTimeout(
+    `${_backendUrl}/api/analyze/upload`,
+    {
+      method: 'POST',
+      body: formData,
+      // Do NOT set Content-Type — browser sets multipart boundary automatically
+    },
+    60_000,
+  );
+  await assertOk(response);
+  return response.json() as Promise<{ jobId: string; status: string }>;
+};
+
 /** Poll analysis job status. */
 export const getAnalyzeStatus = async (jobId: string): Promise<JobStatus> => {
   const response = await fetchWithTimeout(

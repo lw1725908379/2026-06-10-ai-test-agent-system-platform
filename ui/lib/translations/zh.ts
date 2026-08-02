@@ -1096,7 +1096,7 @@ export const translations = {
     selectLanguage: "选择语言",
   },
 };
-// @ts-expect-error  MC8zOmFIVnBZMlhsaUpqbWxvYzZXVzl2TWc9PTphY2JkMGVhZg==
+// watermark  MC8zOmFIVnBZMlhsaUpqbWxvYzZXVzl2TWc9PTphY2JkMGVhZg==
 
 export default translations;
 // eslint-disable  MS8zOmFIVnBZMlhsaUpqbWxvYzZXVzl2TWc9PTphY2JkMGVhZg==

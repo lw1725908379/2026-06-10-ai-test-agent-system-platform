@@ -3,10 +3,10 @@
  *
  * 使用 Monaco Editor (VS Code 的编辑器核心) 提供专业的代码编辑体验
  */
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==
 
 "use client";
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==
 
 import React, { useRef, useEffect } from "react";
 import Editor, { OnMount, OnChange } from "@monaco-editor/react";
@@ -84,4 +84,4 @@ export function MonacoCodeEditor({
     </div>
   );
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZhVzB6VXc9PTo4MTE0ZWQ5Nw==

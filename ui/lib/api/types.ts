@@ -110,7 +110,7 @@ export interface FolderCreate {
   folder_type?: FolderType;  // 文件夹类型
   parent_id?: string;
 }
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZaM1ZMVXc9PTpiMjE2MDAwMw==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZaM1ZMVXc9PTpiMjE2MDAwMw==
 
 // 更新文件夹请求
 export interface FolderUpdate {
@@ -511,7 +511,7 @@ export interface AddTestCasesRequest {
   configuration_ids?: number[];
   assignee?: string;
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZaM1ZMVXc9PTpiMjE2MDAwMw==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZaM1ZMVXc9PTpiMjE2MDAwMw==
 
 // 从测试运行移除测试用例请求
 export interface RemoveTestCasesRequest {

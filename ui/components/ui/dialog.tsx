@@ -1,5 +1,5 @@
 "use client";
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZaMVExT1E9PTpkMzY1NDViMA==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZaMVExT1E9PTpkMzY1NDViMA==
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -10,7 +10,7 @@ const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
 const DialogClose = DialogPrimitive.Close;
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZaMVExT1E9PTpkMzY1NDViMA==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZaMVExT1E9PTpkMzY1NDViMA==
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,

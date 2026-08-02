@@ -46,7 +46,7 @@ const AvatarFallback = React.forwardRef<
   />
 ));
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
-// @ts-expect-error  MS8yOmFIVnBZMlhsaUpqbWxvYzZURlJwZUE9PTo0NjAwZmM5NA==
+// watermark  MS8yOmFIVnBZMlhsaUpqbWxvYzZURlJwZUE9PTo0NjAwZmM5NA==
 
 export { Avatar, AvatarImage, AvatarFallback };
 

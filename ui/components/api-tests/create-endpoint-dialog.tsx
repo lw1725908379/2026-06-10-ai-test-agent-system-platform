@@ -29,7 +29,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZjbk53TUE9PTo3MDc2NGFiYg==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZjbk53TUE9PTo3MDc2NGFiYg==
 
 interface CreateEndpointDialogProps {
   open: boolean;

@@ -5,7 +5,7 @@
  * 包括：基本信息、参数、请求体、响应、关联信息等
  */
 "use client";
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -47,7 +47,7 @@ interface APIEndpointDetail {
   total_test_runs?: number;
   last_run_status?: string;
 }
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
 
 interface APIEndpointSidebarProps {
   projectIdentifier: string;
@@ -286,7 +286,7 @@ export function APIEndpointSidebar({
     </div>
   );
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
 
 // 可折叠的分组组件
 interface SectionProps {
@@ -319,4 +319,4 @@ function Section({ title, icon, children, defaultOpen = false }: SectionProps) {
     </div>
   );
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZVRGRaTXc9PTo4MTM0MWY3Mg==

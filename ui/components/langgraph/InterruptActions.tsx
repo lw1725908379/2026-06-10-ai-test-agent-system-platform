@@ -8,14 +8,14 @@ import { CheckCircle, XCircle, Edit3, ChevronDown, ChevronUp } from "lucide-reac
 import { Interrupt } from "@langchain/langgraph-sdk";
 import { HumanInterrupt, HumanResponse } from "@/lib/langgraph/types";
 import { cn } from "@/lib/utils";
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZaRGxsWkE9PTo2NTUzOTRhMg==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZaRGxsWkE9PTo2NTUzOTRhMg==
 
 interface InterruptActionsProps {
   interrupt: Interrupt;
   onSubmit: (responses: HumanResponse[]) => void;
   isLoading?: boolean;
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZaRGxsWkE9PTo2NTUzOTRhMg==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZaRGxsWkE9PTo2NTUzOTRhMg==
 
 type DecisionMode = "idle" | "edit" | "reject";
 // eslint-disable  My80OmFIVnBZMlhsaUpqbWxvYzZaRGxsWkE9PTo2NTUzOTRhMg==

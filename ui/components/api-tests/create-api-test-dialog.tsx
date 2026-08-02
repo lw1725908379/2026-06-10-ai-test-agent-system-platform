@@ -35,10 +35,10 @@ interface CreateAPITestDialogProps {
 // NOTE  MS80OmFIVnBZMlhsaUpqbWxvYzZWRkI0Tnc9PTpjMzg2ZWJhNg==
 
 type SchemaSource = "url" | "file";
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZWRkI0Tnc9PTpjMzg2ZWJhNg==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZWRkI0Tnc9PTpjMzg2ZWJhNg==
 
 type Step = "basic" | "schema" | "generating" | "preview";
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZWRkI0Tnc9PTpjMzg2ZWJhNg==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZWRkI0Tnc9PTpjMzg2ZWJhNg==
 
 export function CreateAPITestDialog({
   open,

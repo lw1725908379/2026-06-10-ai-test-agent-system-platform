@@ -4,7 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import "./globals.css";
-// @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZZMkZxVUE9PTo1YzQ0ODE2ZA==
+// watermark MC8yOmFIVnBZMlhsaUpqbWxvYzZZMkZxVUE9PTo1YzQ0ODE2ZA==
 
 export const metadata: Metadata = {
   title: "智能测试平台",

@@ -14,7 +14,7 @@ export interface AttachmentInfo {
   created_at: string;
   url?: string;
 }
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZaMEZxZHc9PTo0ZWJiNmU1OA==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZaMEZxZHc9PTo0ZWJiNmU1OA==
 
 export interface AttachmentUploadResponse {
   id: string;

@@ -101,7 +101,9 @@ export function useChat({
           optimisticValues: (prev) => ({
             messages: [...(prev.messages ?? []), newMessage],
           }),
-          config: { ...(activeAssistant?.config ?? {}), recursion_limit: 1000 },
+          config: { ...(activeAssistant?.config ?? {}), recursion_limit: 100 },
+          // 并发任务已满时立即拒绝，而不是无限排队（避免任务堆积阻塞队列）
+          multitaskStrategy: "reject",
         }
       );
       // Update thread list immediately when sending a message
@@ -153,7 +155,7 @@ export function useChat({
       stream.submit(undefined, {
         config: {
           ...(activeAssistant?.config || {}),
-          recursion_limit: 1000,
+          recursion_limit: 100,
         },
         ...(hasTaskToolCall
           ? { interruptAfter: ["tools"] }

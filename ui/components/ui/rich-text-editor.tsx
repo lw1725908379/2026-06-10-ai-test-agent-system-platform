@@ -32,7 +32,7 @@ interface RichTextEditorProps {
   className?: string;
   id?: string;
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZUM1ZKYkE9PTo5NzE0ODkwZQ==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZUM1ZKYkE9PTo5NzE0ODkwZQ==
 
 interface ToolbarButton {
   icon: React.ElementType;

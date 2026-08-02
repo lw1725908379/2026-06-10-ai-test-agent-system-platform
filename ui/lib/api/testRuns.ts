@@ -131,7 +131,7 @@ export function deleteTestRun(
     `${basePath(projectIdentifier)}/${testRunIdentifier}/delete`
   );
 }
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZXa0p0WXc9PTo1NDQzODk1Mg==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZXa0p0WXc9PTo1NDQzODk1Mg==
 
 // =========================================================
 // 分配负责人
@@ -275,7 +275,7 @@ export function subscribeToTestRunEvents(
 // =========================================================
 // 脚本作业子资源
 // =========================================================
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZXa0p0WXc9PTo1NDQzODk1Mg==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZXa0p0WXc9PTo1NDQzODk1Mg==
 
 // 获取测试运行的脚本作业列表
 export function getScriptJobs(

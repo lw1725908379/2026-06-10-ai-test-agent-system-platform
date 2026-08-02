@@ -55,7 +55,7 @@ function areUiEntriesEqual(prevUi?: any[], nextUi?: any[]) {
 
   return prevUi.every((entry, index) => entry === nextUi[index]);
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZiMDF2VHc9PToxMWRjOGFiYQ==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZiMDF2VHc9PToxMWRjOGFiYQ==
 
 export const ChatMessage = React.memo<ChatMessageProps>(
   ({

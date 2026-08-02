@@ -1,5 +1,5 @@
 "use client";
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZVMWR0YlE9PTpmZmE4MWU3Ng==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZVMWR0YlE9PTpmZmE4MWU3Ng==
 
 import * as React from "react";
 import { useTheme } from "next-themes";
@@ -102,4 +102,4 @@ export function Header({ title, children }: HeaderProps) {
   );
 }
 
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZVMWR0YlE9PTpmZmE4MWU3Ng==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZVMWR0YlE9PTpmZmE4MWU3Ng==

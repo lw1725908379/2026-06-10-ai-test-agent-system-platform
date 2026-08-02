@@ -12,7 +12,7 @@ interface WebPageSidebarProps {
   page: WebPage | null;
   onClose: () => void;
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZXbkZTYVE9PTo3MTkyNTNhMQ==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZXbkZTYVE9PTo3MTkyNTNhMQ==
 
 export function WebPageSidebar({ page, onClose }: WebPageSidebarProps) {
   const { t } = useLanguage();

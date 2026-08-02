@@ -149,7 +149,7 @@ export interface AndroidDevice {
 }
 
 // ==================== Android 功能 API 函数 ====================
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZTWFJxVGc9PTowYjVlM2NjOQ==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZTWFJxVGc9PTowYjVlM2NjOQ==
 
 /**
  * 获取项目的 Android 功能列表

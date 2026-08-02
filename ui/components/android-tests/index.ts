@@ -2,7 +2,7 @@
 export { AndroidFunctionFolderTree } from "./folder-tree";
 export type { AndroidFunctionFolderTreeRef } from "./folder-tree";
 export { AndroidSubFunctionSidebar } from "./android-function-sidebar";
-// @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZXR1EyYUE9PTo0NTk5ODEyZQ==
+// watermark  MC8yOmFIVnBZMlhsaUpqbWxvYzZXR1EyYUE9PTo0NTk5ODEyZQ==
 
 // Android 测试组件
 export { CreateAndroidFunctionDialog } from "./create-function-dialog";

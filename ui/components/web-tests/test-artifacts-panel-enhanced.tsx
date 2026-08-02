@@ -3,7 +3,7 @@
  *
  * 支持默认显示、代码编辑和执行功能
  */
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZUa0pxWlE9PTo0MmY5YzA4OA==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZUa0pxWlE9PTo0MmY5YzA4OA==
 
 "use client";
 // TODO  MS80OmFIVnBZMlhsaUpqbWxvYzZUa0pxWlE9PTo0MmY5YzA4OA==
@@ -97,7 +97,7 @@ const artifactTypeConfig = {
     borderColor: "border-pink-200 dark:border-pink-800",
   },
 };
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZUa0pxWlE9PTo0MmY5YzA4OA==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZUa0pxWlE9PTo0MmY5YzA4OA==
 
 export function EnhancedTestArtifactsPanel({
   subFunctionId,

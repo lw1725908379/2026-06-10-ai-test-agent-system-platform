@@ -1,7 +1,7 @@
 /**
  * 文档上传 API
  */
-// @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZlbWxvVXc9PTo3MWI3Y2JlNw==
+// watermark  MC8yOmFIVnBZMlhsaUpqbWxvYzZlbWxvVXc9PTo3MWI3Y2JlNw==
 
 import { t } from "@/lib/translations";
 

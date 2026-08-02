@@ -7,7 +7,7 @@ import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { getProjects } from "@/lib/api/projects";
 import type { ProjectInfo } from "@/lib/api/types";
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZUVTVLWkE9PToxMTUxYzUzYQ==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZUVTVLWkE9PToxMTUxYzUzYQ==
 
 interface MainLayoutProps {
   children: React.ReactNode;

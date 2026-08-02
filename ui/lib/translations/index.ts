@@ -16,7 +16,7 @@ export const languageNames: Record<Language, string> = {
   en: "English",
   ja: "日本語",
 };
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZiVmROWnc9PTplYWEzYTdmZQ==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZiVmROWnc9PTplYWEzYTdmZQ==
 
 /**
  * 获取当前语言（从 localStorage 读取）

@@ -36,7 +36,7 @@ export interface AIAssistFieldRequest {
   };
   prompt?: string;
 }
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZPR1paYXc9PTplZWRjNjMwNw==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZPR1paYXc9PTplZWRjNjMwNw==
 
 // AI辅助填充字段的响应
 export interface AIAssistFieldResponse {

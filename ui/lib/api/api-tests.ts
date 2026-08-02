@@ -42,7 +42,7 @@ export interface APITestRun {
   created_at: string;
   updated_at?: string;
 }
-// @ts-expect-error  MC80OmFIVnBZMlhsaUpqbWxvYzZkbVpwV1E9PToxOGQ0NTBiNA==
+// watermark  MC80OmFIVnBZMlhsaUpqbWxvYzZkbVpwV1E9PToxOGQ0NTBiNA==
 
 export interface APITestResult {
   id: string;
@@ -299,7 +299,7 @@ export async function getTestRuns(
   );
   return response.data;
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZkbVpwV1E9PToxOGQ0NTBiNA==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZkbVpwV1E9PToxOGQ0NTBiNA==
 
 /**
  * 获取测试运行详情

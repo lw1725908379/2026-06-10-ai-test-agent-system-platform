@@ -46,7 +46,7 @@ const AlertDialogContent = React.forwardRef<
   </AlertDialogPortal>
 ))
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZlamRYU1E9PTo1OTg3M2ZjMw==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZlamRYU1E9PTo1OTg3M2ZjMw==
 
 const AlertDialogHeader = ({
   className,

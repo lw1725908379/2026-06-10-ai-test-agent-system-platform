@@ -68,7 +68,7 @@ export interface HumanInterruptConfig {
   allow_edit: boolean;
   allow_accept: boolean;
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZOMVZXVmc9PToxYmMyMGVmNA==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZOMVZXVmc9PToxYmMyMGVmNA==
 
 /**
  * 表示代理流程中的人工中断。

@@ -32,7 +32,7 @@ import { useLanguage } from "@/providers/LanguageProvider";
 // eslint-disable  MS80OmFIVnBZMlhsaUpqbWxvYzZiamRVTkE9PTphMjQwZmQ0ZQ==
 
 type SchemaSource = "url" | "file";
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZiamRVTkE9PTphMjQwZmQ0ZQ==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZiamRVTkE9PTphMjQwZmQ0ZQ==
 
 interface AIGenerateAPITestDialogProps {
   open: boolean;

@@ -32,7 +32,7 @@ interface AIGenerateDialogProps {
   onOpenChange: (open: boolean) => void;
   onGenerate: (prompt: string) => void;
 }
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZUbnB4WXc9PTpjNmI5OGY2ZA==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZUbnB4WXc9PTpjNmI5OGY2ZA==
 
 export function AIGenerateDialog({
   open,

@@ -37,7 +37,7 @@ import {
 import { listScenarios, deleteScenario } from "@/lib/api/scenarios";
 import { useLanguage } from "@/providers/LanguageProvider";
 import type { Scenario } from "@/types/scenario";
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZORFYzVnc9PTplOTIzM2M3Nw==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZORFYzVnc9PTplOTIzM2M3Nw==
 
 interface ScenarioListPanelProps {
   projectId: string;

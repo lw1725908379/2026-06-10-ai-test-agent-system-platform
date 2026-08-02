@@ -35,7 +35,7 @@ interface APITestDialogProps {
 
 type ScriptFormat = "playwright" | "postman" | "rest_assured" | "other";
 type ScriptLanguage = "typescript" | "javascript" | "python" | "java" | "other";
-// @ts-expect-error  Mi80OmFIVnBZMlhsaUpqbWxvYzZkSGhCVEE9PTowYWNiZDRkOQ==
+// watermark  Mi80OmFIVnBZMlhsaUpqbWxvYzZkSGhCVEE9PTowYWNiZDRkOQ==
 
 const defaultFormData: CreateAPITestRequest = {
   name: "",

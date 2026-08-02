@@ -91,6 +91,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
     sendMessage,
     stopStream,
     resumeInterrupt,
+    continueStream,
   } = useChatContext();
 
   // 保持 sendMessage 的最新引用
@@ -107,30 +108,6 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
   }, []);
 
   const submitDisabled = isLoading || !assistant;
-
-  // 长时间加载提示（生成大段内容时）
-  const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
-  const [showLongWaitHint, setShowLongWaitHint] = useState(false);
-
-  useEffect(() => {
-    if (isLoading && !loadingStartTime) {
-      setLoadingStartTime(Date.now());
-      setShowLongWaitHint(false);
-    } else if (!isLoading) {
-      setLoadingStartTime(null);
-      setShowLongWaitHint(false);
-    }
-  }, [isLoading, loadingStartTime]);
-
-  useEffect(() => {
-    if (!loadingStartTime) return;
-    const interval = setInterval(() => {
-      if (Date.now() - loadingStartTime > 10000) {
-        setShowLongWaitHint(true);
-      }
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [loadingStartTime]);
 
   const handleSubmit = useCallback(
     (e?: FormEvent) => {
@@ -378,10 +355,44 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
             </div>
           ) : (
             <>
-              {showLongWaitHint && (
-                <div className="mx-auto mb-2 flex max-w-[1024px] items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>正在生成大量内容，请稍候...</span>
+              {isLoading && (
+                <div className="mx-auto mb-3 flex max-w-[1024px] flex-col gap-2 rounded-lg border border-border bg-muted/50 px-4 py-3">
+                  {/* 阶段进度条 */}
+                  {todos.length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="font-medium">
+                          {todos.find((t) => t.status === "in_progress")?.content ||
+                            "执行中..."}
+                        </span>
+                        <span>
+                          {todos.filter((t) => t.status === "completed").length}/
+                          {todos.length} 阶段
+                        </span>
+                      </div>
+                      <div className="flex h-1.5 w-full gap-1 overflow-hidden">
+                        {todos.map((t, i) => (
+                          <div
+                            key={t.id ?? i}
+                            className={cn(
+                              "h-full flex-1 rounded-full transition-all duration-300",
+                              t.status === "completed"
+                                ? "bg-success/80"
+                                : t.status === "in_progress"
+                                  ? "animate-pulse bg-warning/80"
+                                  : "bg-border"
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {todos.length === 0 && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>正在生成大量内容，请稍候...</span>
+                    </div>
+                  )}
                 </div>
               )}
               {processedMessages.map((data, index) => {
@@ -626,6 +637,36 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant, initia
                   </div>
                 </>
               )}
+            </div>
+          )}
+          {/* 断线/中断恢复提示：任务因网络中断或超时中断时，可一键恢复 */}
+          {!isLoading && !interrupt && processedMessages.length > 0 && (
+            <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5" />
+                <span>任务可能已中断，可以继续上次进度</span>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => continueStream()}
+                className="h-7 text-xs"
+              >
+                恢复任务
+              </Button>
+            </div>
+          )}
+          {/* 分模块生成引导（首次使用提示） */}
+          {!isLoading && processedMessages.length === 0 && (
+            <div className="border-b border-border bg-background px-4 py-2.5">
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                💡 生成建议
+              </p>
+              <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+                需求量较大时，建议按模块分次生成（如"请为视频编辑器模块生成用例"），
+                避免单次任务过大导致卡顿。每完成一个模块，AI 会自动保存已生成的用例。
+              </p>
             </div>
           )}
           <form

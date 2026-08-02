@@ -23,14 +23,19 @@ export function getConfig(): StandaloneConfig | null {
   const stored = localStorage.getItem(CONFIG_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // 强制 deploymentUrl 走同源 /api/langgraph 重写，忽略 localStorage 中的旧绝对地址
+      return {
+        ...parsed,
+        deploymentUrl: getLangGraphApiUrl(),
+      };
     } catch {
       // fall through to env vars
     }
   }
 
   // Fall back to environment variables
-  const deploymentUrl = process.env.NEXT_PUBLIC_LANGGRAPH_API_URL;
+  const deploymentUrl = getLangGraphApiUrl();
   const assistantId = process.env.NEXT_PUBLIC_TESTCASE_GENERATOR_ASSISTANT_ID;
 
   if (deploymentUrl && assistantId) {

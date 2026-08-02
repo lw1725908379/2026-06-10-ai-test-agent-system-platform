@@ -96,7 +96,7 @@ export interface CreateWebSubFunctionRequest {
   custom_config?: any;
   sort_order?: number;
 }
-// @ts-expect-error  MS80OmFIVnBZMlhsaUpqbWxvYzZlVVJxZHc9PTplZDAwZjM1OA==
+// watermark  MS80OmFIVnBZMlhsaUpqbWxvYzZlVVJxZHc9PTplZDAwZjM1OA==
 
 export interface UpdateWebSubFunctionRequest {
   display_name?: string;
@@ -280,7 +280,7 @@ export async function deleteWebSubFunction(
   );
   return response.data;
 }
-// @ts-expect-error  My80OmFIVnBZMlhsaUpqbWxvYzZlVVJxZHc9PTplZDAwZjM1OA==
+// watermark  My80OmFIVnBZMlhsaUpqbWxvYzZlVVJxZHc9PTplZDAwZjM1OA==
 
 /**
  * 获取文件夹下的 Web 功能

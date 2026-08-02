@@ -26,7 +26,7 @@ export function ChatProvider({
 }
 
 export type ChatContextType = ReturnType<typeof useChat>;
-// @ts-expect-error  MS8yOmFIVnBZMlhsaUpqbWxvYzZaR2cwZVE9PTo4ZmI1MTU1Mg==
+// watermark  MS8yOmFIVnBZMlhsaUpqbWxvYzZaR2cwZVE9PTo4ZmI1MTU1Mg==
 
 export const ChatContext = createContext<ChatContextType | undefined>(
   undefined

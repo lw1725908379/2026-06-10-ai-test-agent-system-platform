@@ -1,5 +1,5 @@
 "use client";
-// @ts-expect-error  MC8yOmFIVnBZMlhsaUpqbWxvYzZWMmhrYlE9PTo1NDY3OTI4OQ==
+// watermark  MC8yOmFIVnBZMlhsaUpqbWxvYzZWMmhrYlE9PTo1NDY3OTI4OQ==
 
 import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
@@ -26,7 +26,7 @@ const Checkbox = React.forwardRef<
   </CheckboxPrimitive.Root>
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
-// @ts-expect-error  MS8yOmFIVnBZMlhsaUpqbWxvYzZWMmhrYlE9PTo1NDY3OTI4OQ==
+// watermark  MS8yOmFIVnBZMlhsaUpqbWxvYzZWMmhrYlE9PTo1NDY3OTI4OQ==
 
 export { Checkbox };
 
