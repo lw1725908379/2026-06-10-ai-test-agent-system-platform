@@ -12,9 +12,9 @@ console.log(`[Playwright Config] headless=${!useHeaded} (DISPLAY=${process.env.D
 
 module.exports = defineConfig({
   testDir: './tests',
-  timeout: 300000, // 5分钟超时
+  timeout: 120000, // 单个测试最多 2 分钟（防止外部网站响应慢导致卡死）
   expect: {
-    timeout: 30000
+    timeout: 15000 // 断言等待最多 15s
   },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -26,6 +26,8 @@ module.exports = defineConfig({
     video: 'on',  // 启用视频录制
     videoSize: { width: 1280, height: 720 },
     headless: !useHeaded,  // 有显示器时显示窗口，否则无头执行
+    navigationTimeout: 60000, // 页面导航最多 60s，防止 goto 卡死
+    actionTimeout: 30000,     // 每个动作（点击/输入）最多 30s
   },
   projects: [
     {
