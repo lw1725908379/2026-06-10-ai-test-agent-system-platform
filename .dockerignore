@@ -1,5 +1,6 @@
 .venv
 node_modules
+**/node_modules
 .next
 __pycache__
 *.pyc
@@ -13,4 +14,6 @@ ui/.next
 gitnexus-web/node_modules
 gitnexus-shared/node_modules
 langgraph_api/js/node_modules
+backend/workspace/web_mcp/node_modules
+backend/workspace/web_cli/node_modules
 

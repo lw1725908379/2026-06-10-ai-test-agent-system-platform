@@ -25,6 +25,48 @@ def _get_api_url(path: str) -> str:
     return f"{API_BASE_URL}{API_PREFIX}{path}"
 
 
+async def _ensure_folder(
+    project_identifier: str,
+    folder_id: Optional[str],
+) -> str:
+    """
+    确保存在有效的文件夹 ID。
+
+    若传入的 folder_id 为空，则在项目下创建（或复用）"AI 生成用例"文件夹，
+    返回其 ID。这是因为测试用例创建接口要求 folder_id 必填。
+
+    Args:
+        project_identifier: 项目标识符
+        folder_id: 可选的文件夹 ID
+
+    Returns:
+        有效的文件夹 ID（字符串）
+    """
+    if folder_id and folder_id.strip():
+        return folder_id.strip()
+
+    # 查询是否已有"AI 生成用例"文件夹
+    list_url = _get_api_url(f"/projects/{project_identifier}/folders")
+    list_resp = await _make_http_request(method="GET", url=list_url)
+    if list_resp.get("success"):
+        for folder in (list_resp.get("data") or []):
+            if folder.get("name") == "AI 生成用例":
+                return str(folder.get("id"))
+
+    # 创建新文件夹
+    create_url = _get_api_url(f"/projects/{project_identifier}/folders")
+    create_resp = await _make_http_request(
+        method="POST",
+        url=create_url,
+        json_data={"name": "AI 生成用例", "description": "AI 智能体自动生成的测试用例"},
+    )
+    if create_resp.get("success"):
+        return str(create_resp.get("data", {}).get("id"))
+
+    logger.warning(f"创建 AI 生成用例文件夹失败: {create_resp}")
+    return ""
+
+
 async def _make_http_request(
     method: str,
     url: str,
@@ -85,6 +127,11 @@ async def _create_test_case_impl(
         "case_type": case_type,
         "automation_status": automation_status,
     }
+
+    # 若 folder_id 为空，自动创建/复用"AI 生成用例"文件夹（测试用例创建接口要求 folder_id 必填）
+    folder_id = await _ensure_folder(project_identifier, folder_id)
+    if not folder_id:
+        return {"success": False, "error": "无法确定目标文件夹", "message": "创建测试用例失败：folder_id 为空且无法自动创建文件夹"}
 
     if description is not None:
         request_data["description"] = description

@@ -4,7 +4,7 @@
 定义文件夹表结构，支持层级结构
 """
 
-from sqlalchemy import Enum, ForeignKey, String, Text
+from sqlalchemy import Enum, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,7 +20,10 @@ class Folder(Base, UUIDMixin, TimestampMixin):
     存储测试用例和API测试文件夹信息，支持无限层级嵌套
     """
     __tablename__ = "folders"
-    __table_args__ = {"comment": "文件夹表"}
+    __table_args__ = (
+        {"comment": "文件夹表"},
+    )
+    # 索引在数据库迁移中创建
 # pragma: no cover  MS80OmFIVnBZMlhsaUpqbWxvYzZkVkZHUlE9PTo4Y2FiNGJiZQ==
 
     project_id: Mapped[UUID] = mapped_column(

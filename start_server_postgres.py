@@ -97,7 +97,7 @@ def setup_environment():
         "LANGGRAPH_ALLOW_BLOCKING": "true",
         "LANGGRAPH_API_URL": "http://localhost:2026",
 
-        "LANGGRAPH_DEFAULT_RECURSION_LIMIT": "2000",
+        "LANGGRAPH_DEFAULT_RECURSION_LIMIT": "100",
 
         # Graphs configuration
         "LANGSERVE_GRAPHS": json.dumps(graphs) if graphs else "{}",
@@ -106,7 +106,8 @@ def setup_environment():
         "LANGGRAPH_AUTH": json.dumps(auth) if auth else None,
 
         # Worker configuration
-        "N_JOBS_PER_WORKER": "1",
+        # 最多 4 个任务并行，避免单个慢任务阻塞整个队列
+        "N_JOBS_PER_WORKER": "4",
     }
 
     # 过滤掉 None 值，然后设置环境变量

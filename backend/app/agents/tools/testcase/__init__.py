@@ -30,6 +30,8 @@ from app.agents.tools.testcase.rag_tools import (
 
 from app.agents.tools.testcase.excel_tools import (
     export_test_cases_to_excel,
+    export_test_cases_from_system_tool,
+    check_test_case_coverage_tool,
 )
 
 # 按业务域分类的工具列表
@@ -49,6 +51,8 @@ RAG_TOOLS = build_rag_tools()
 
 EXCEL_TOOLS = [
     export_test_cases_to_excel,
+    export_test_cases_from_system_tool,
+    check_test_case_coverage_tool,
 ]
 
 ALL_LOCAL_TOOLS = TESTCASE_TOOLS + DOCUMENT_TOOLS + RAG_TOOLS + EXCEL_TOOLS
@@ -92,6 +96,8 @@ __all__ = [
     "parse_document_from_url",
     # Excel 导出
     "export_test_cases_to_excel",
+    "export_test_cases_from_system_tool",
+    "check_test_case_coverage_tool",
     # 分类列表
     "TESTCASE_TOOLS",
     "DOCUMENT_TOOLS",

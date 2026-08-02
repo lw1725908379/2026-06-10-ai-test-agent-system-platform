@@ -1,0 +1,20 @@
+{
+  "name": "web_mcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@playwright/mcp": "^0.0.78",
+    "@playwright/test": "^1.62.1",
+    "playwright": "^1.62.1"
+  },
+  "devDependencies": {}
+}

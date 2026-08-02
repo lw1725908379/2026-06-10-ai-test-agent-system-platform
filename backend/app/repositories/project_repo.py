@@ -70,46 +70,63 @@ class ProjectRepository(BaseRepository[Project]):
         limit: int = 30,
     ) -> list[dict]:
         """
-        获取所有项目及其统计信息
-        
+        获取所有项目及其统计信息（优化版本 - 避免 N+1 查询）
+
+        使用子查询一次性获取所有项目的统计信息
+
         Args:
             offset: 偏移量
             limit: 限制数量
-            
+
         Returns:
             list[dict]: 项目列表及统计信息
         """
+        # 子查询：获取每个项目的测试用例数量
+        tc_count_subquery = (
+            select(
+                TestCase.project_id,
+                func.count(TestCase.id).label('tc_count')
+            )
+            .group_by(TestCase.project_id)
+            .subquery()
+        )
+
+        # 子查询：获取每个项目的文件夹数量
+        folder_count_subquery = (
+            select(
+                Folder.project_id,
+                func.count(Folder.id).label('folder_count')
+            )
+            .group_by(Folder.project_id)
+            .subquery()
+        )
+
+        # 主查询：LEFT JOIN 子查询获取统计
         result = await self.session.execute(
-            select(Project)
+            select(
+                Project,
+                func.coalesce(tc_count_subquery.c.tc_count, 0).label('test_cases_count'),
+                func.coalesce(folder_count_subquery.c.folder_count, 0).label('folders_count')
+            )
+            .outerjoin(tc_count_subquery, Project.id == tc_count_subquery.c.project_id)
+            .outerjoin(folder_count_subquery, Project.id == folder_count_subquery.c.project_id)
             .options(selectinload(Project.teams))
             .options(selectinload(Project.creator))
             .offset(offset)
             .limit(limit)
             .order_by(Project.created_at.desc())
         )
-        projects = result.scalars().all()
-# noqa  MS80OmFIVnBZMlhsaUpqbWxvYzZTV1ZNV2c9PTo4NDA2N2I2Mw==
-        
+
+        rows = result.all()
+
         project_data = []
-        for project in projects:
-            # 获取测试用例数量
-            tc_count = await self.session.execute(
-                select(func.count()).select_from(TestCase)
-                .where(TestCase.project_id == project.id)
-            )
-            # 获取文件夹数量
-            folder_count = await self.session.execute(
-                select(func.count()).select_from(Folder)
-                .where(Folder.project_id == project.id)
-            )
-# pragma: no cover  Mi80OmFIVnBZMlhsaUpqbWxvYzZTV1ZNV2c9PTo4NDA2N2I2Mw==
-            
+        for row in rows:
             project_data.append({
-                "project": project,
-                "test_cases_count": tc_count.scalar_one(),
-                "folders_count": folder_count.scalar_one(),
+                "project": row[0],
+                "test_cases_count": row[1],
+                "folders_count": row[2],
             })
-        
+
         return project_data
     
     async def get_next_sequence(self) -> int:

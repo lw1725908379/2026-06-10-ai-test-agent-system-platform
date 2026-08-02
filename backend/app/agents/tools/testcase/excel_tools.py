@@ -14,6 +14,8 @@ from typing import Any
 
 from langchain.tools import tool
 
+from app.config.settings import settings
+
 logger = logging.getLogger(__name__)
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
@@ -326,3 +328,276 @@ def export_test_cases_to_excel(
         "download_url": download_url,
         "message": f"测试用例已导出为 {filename}，点击以下链接下载：\n{download_url}"
     }, ensure_ascii=False)
+
+
+@tool
+async def export_test_cases_from_system_tool(
+    project_identifier: str,
+    folder_id: str,
+    sheet_name: str = "测试用例",
+) -> str:
+    """
+    从系统数据库中按文件夹导出测试用例为 Excel 文件。
+
+    当用户要导出的用例已经保存到系统中（例如通过 batch_create_test_cases_tool 创建），
+    使用此工具按 folder_id 直接导出，**无需把大量用例数据内联传给工具**。
+
+    这避免了大数据量（如 200+ 条用例）无法作为工具参数传递的问题。
+
+    Args:
+        project_identifier: 项目标识符，如 'PR-1'
+        folder_id: 目标文件夹 UUID（用例所在的文件夹）
+        sheet_name: 工作表名称，默认为 "测试用例"
+
+    Returns:
+        导出结果的 JSON 字符串，包含 success/filename/download_url。
+    """
+    try:
+        import json as _json
+        from uuid import UUID as _UUID
+
+        from sqlalchemy import select as _select
+        from sqlalchemy.orm import selectinload as _selectinload
+
+        from app.config.database import async_session_factory
+        from app.models.test_case import TestCase
+
+        folder_uuid = _UUID(folder_id)
+
+        # 查询该文件夹下所有测试用例（预加载 steps）
+        async with async_session_factory() as session:
+            result = await session.execute(
+                _select(TestCase)
+                .where(TestCase.folder_id == folder_uuid)
+                .options(_selectinload(TestCase.steps))
+                .order_by(TestCase.created_at)
+            )
+            test_cases_orm = result.scalars().all()
+
+        if not test_cases_orm:
+            return _json.dumps({
+                "success": False,
+                "error": f"文件夹 {folder_id} 下没有测试用例",
+                "message": "导出失败：该文件夹下没有测试用例"
+            }, ensure_ascii=False)
+
+        # 转换为导出格式
+        test_cases = []
+        for tc in test_cases_orm:
+            steps = [
+                {"step": s.action, "result": s.expected_result or ""}
+                for s in (tc.steps or [])
+            ]
+            test_cases.append({
+                "id": tc.identifier,
+                "title": tc.name,
+                "module": str(getattr(tc, "feature", "") or ""),
+                "type": getattr(tc, "case_type", ""),
+                "priority": getattr(tc, "priority", ""),
+                "preconditions": tc.preconditions or "",
+                "steps": steps,
+                "test_data": "",
+                "expected_results": "",
+                "remarks": tc.description or "",
+            })
+
+        # 复用现有导出逻辑（核心部分）
+        from openpyxl import Workbook as _Workbook
+        output_path = Path("/app/backend/workspace/testcase/exports") / f"测试用例_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        wb = _Workbook()
+        ws = wb.active
+        ws.title = sheet_name
+
+        headers = ["用例编号", "用例标题", "所属模块", "用例类型", "优先级", "前置条件", "测试步骤", "测试数据", "预期结果", "备注"]
+        ws.append(headers)
+        for col_idx in range(1, len(headers) + 1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.fill = _HEADER_FILL
+            cell.font = _HEADER_FONT
+            cell.alignment = _ALIGNMENT_CENTER
+            cell.border = _BORDER
+
+        for case in test_cases:
+            normalized = _normalize_case(case)
+            ws.append([
+                normalized["id"], normalized["title"], normalized["module"],
+                normalized["type"], normalized["priority"], normalized["preconditions"],
+                normalized["steps"], normalized["test_data"], normalized["expected_results"],
+                normalized["remarks"],
+            ])
+            row_idx = ws.max_row
+            for col_idx in range(1, len(headers) + 1):
+                cell = ws.cell(row=row_idx, column=col_idx)
+                cell.alignment = _ALIGNMENT_WRAP
+                cell.border = _BORDER
+
+        for col_letter, width in _DEFAULT_COLUMN_WIDTHS.items():
+            ws.column_dimensions[col_letter].width = width
+        ws.row_dimensions[1].height = 24
+
+        filename = output_path.name
+        from app.config.minio_client import MinIOClient
+
+        buf = io.BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+
+        object_name = f"exports/{filename}"
+        try:
+            MinIOClient.upload_bytes(
+                object_name=object_name,
+                data=buf.getvalue(),
+                content_type="application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet",
+            )
+            public_base = settings.backend_public_url or "http://localhost:3000"
+            download_url = f"{public_base}/api/v2/exports/download/{filename}"
+        except Exception as e:
+            wb.save(str(output_path))
+            public_base = settings.backend_public_url or "http://localhost:3000"
+            download_url = f"{public_base}/api/v2/exports/download/{filename}"
+            logger.warning(f"MinIO 上传失败，回退到本地文件: {e}")
+
+        return _json.dumps({
+            "success": True,
+            "count": len(test_cases),
+            "filename": filename,
+            "download_url": download_url,
+            "message": f"已从系统导出 {len(test_cases)} 条测试用例为 {filename}，点击以下链接下载：\n{download_url}"
+        }, ensure_ascii=False)
+
+    except Exception as e:
+        logger.error(f"从系统导出测试用例失败: {e}", exc_info=True)
+        return json.dumps({
+            "success": False,
+            "error": str(e),
+            "message": f"从系统导出测试用例失败: {e}"
+        }, ensure_ascii=False)
+
+
+@tool
+async def check_test_case_coverage_tool(
+    folder_id: str,
+    features: list[dict[str, Any]],
+) -> str:
+    """
+    程序化校验测试用例功能点覆盖率（确定性比对，不依赖 LLM 主观判断）。
+
+    输入需求功能点清单，对照系统中已保存的用例（按 folder_id 查库），
+    逐个功能点检查是否有对应用例，返回精确覆盖率与缺失清单。
+
+    Args:
+        folder_id: 已保存用例的文件夹 UUID（用 batch_create_test_cases_tool 保存到的文件夹）
+        features: 需求功能点清单，每个元素包含：
+            - module: 所属模块名（如"视频编辑器"）
+            - feature: 功能点名（如"片段分割"）
+            - skip: 可选，true 表示本期不实现（不计入覆盖率分母）
+
+    Returns:
+        JSON 字符串，包含：
+        - total: 应覆盖功能点总数（不含本期不实现）
+        - covered: 已覆盖功能点数
+        - rate: 覆盖率百分比
+        - covered_list: 已覆盖功能点清单
+        - missing_list: 缺失功能点清单（逐个点名，作为补测输入）
+        - skipped_list: 本期不实现的功能点清单
+    """
+    try:
+        import json as _json
+        from uuid import UUID as _UUID
+
+        from sqlalchemy import select as _select
+
+        from app.config.database import async_session_factory
+        from app.models.test_case import TestCase
+
+        folder_uuid = _UUID(folder_id)
+
+        # 1. 查询该文件夹下所有用例名称
+        async with async_session_factory() as session:
+            result = await session.execute(
+                _select(TestCase.name).where(TestCase.folder_id == folder_uuid)
+            )
+            case_names = [row[0] for row in result.all()]
+
+        # 2. 对每个功能点做确定性匹配
+        # 匹配规则：用例名包含功能点名（或其核心词）即视为覆盖
+        covered_list = []
+        missing_list = []
+        skipped_list = []
+        total = 0
+        covered = 0
+
+        for feat in features:
+            if not isinstance(feat, dict):
+                continue
+            module = str(feat.get("module") or "")
+            feature = str(feat.get("feature") or "").strip()
+            skip = bool(feat.get("skip") or feat.get("not_implemented") or False)
+
+            if not feature:
+                continue
+
+            if skip:
+                skipped_list.append({"module": module, "feature": feature})
+                continue
+
+            total += 1
+
+            # 匹配：功能点名是否出现在任一用例名中
+            # 用核心词匹配（功能点名去掉修饰词后的主词），容忍用例名带场景后缀
+            matched = False
+            for name in case_names:
+                if feature in name or _feature_core_word(feature) in name:
+                    matched = True
+                    break
+
+            if matched:
+                covered += 1
+                covered_list.append({"module": module, "feature": feature})
+            else:
+                missing_list.append({"module": module, "feature": feature})
+
+        rate = round(covered / total * 100, 1) if total > 0 else 100.0
+
+        return _json.dumps({
+            "success": True,
+            "total": total,
+            "covered": covered,
+            "missing": len(missing_list),
+            "rate": rate,
+            "is_full_coverage": covered == total and total > 0,
+            "covered_list": covered_list,
+            "missing_list": missing_list,
+            "skipped_list": skipped_list,
+            "message": (
+                f"覆盖率 {rate}% ({covered}/{total})"
+                + ("，全部覆盖 ✅" if covered == total else f"，缺失 {len(missing_list)} 个功能点，请补测")
+            )
+        }, ensure_ascii=False)
+
+    except Exception as e:
+        logger.error(f"覆盖率校验失败: {e}", exc_info=True)
+        return json.dumps({
+            "success": False,
+            "error": str(e),
+            "message": f"覆盖率校验失败: {e}"
+        }, ensure_ascii=False)
+
+
+def _feature_core_word(feature: str) -> str:
+    """
+    提取功能点的核心词，用于容忍用例名带场景后缀的匹配。
+
+    例如：
+    - "片段分割" -> "片段分割"
+    - "图片生成·size白名单" -> "size"
+    - "节点封面·提示词生成" -> "节点封面"
+    """
+    # 去掉"·"分隔的部分，取最核心的一段
+    parts = feature.replace("·", " ").split()
+    if not parts:
+        return feature
+    # 优先匹配最长段（最可能是核心词）
+    return max(parts, key=len)

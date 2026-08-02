@@ -16,7 +16,7 @@
       "path": "./backend/app/agents/security/agent.py:agent"
     },
     "web_agent": {
-      "path": "./backend/app/agents/web_mcp/agent.py:agent"
+      "path": "./backend/app/agents/web_cli/agent.py:agent"
     }
   },
   "_releaseId": "id_Mi81OmFIVnBZMlhsaUpqbWxvYzZSVk42YlE9PTowMmYxMDUyNw==",

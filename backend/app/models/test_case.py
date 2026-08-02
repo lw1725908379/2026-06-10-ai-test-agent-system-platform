@@ -4,7 +4,7 @@
 定义测试用例、测试步骤、标签等表结构
 """
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, Enum as SQLEnum
+from sqlalchemy import Boolean, ForeignKey, Index, Integer, String, Text, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,7 +20,10 @@ class TestCase(Base, UUIDMixin, TimestampMixin):
     存储测试用例信息，支持普通测试用例和 BDD 测试用例
     """
     __tablename__ = "test_cases"
-    __table_args__ = {"comment": "测试用例表"}
+    __table_args__ = (
+        {"comment": "测试用例表"},
+    )
+    # 索引在数据库迁移中创建
 
     project_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),

@@ -25,7 +25,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "63791:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -73,25 +73,35 @@ services:
       dockerfile: docker/langgraph/Dockerfile
     restart: unless-stopped
     ports:
-      - "2026:2026"
+      - "22026:2026"
     env_file: .env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_URI: postgresql://postgres:root@postgres:5432/ai_test_platform_db
       REDIS_URI: redis://redis:6379/0
       MONGODB_HOST: mongodb
-      LANGGRAPH_API_URL: http://localhost:2026
+      LANGGRAPH_API_URL: http://localhost:22026
       BACKEND_API_URL: http://backend:3001
       RAG_API_URL: http://rag-api:9623
       RAG_MCP_URL: http://rag-mcp:8003
       MINIO_ENDPOINT: minio:9000
+      WEB_MCP_WORKSPACE_ROOT: /app/backend/workspace/web_mcp
+      WEB_MCP_ROOT: /app/backend/workspace/web_mcp
+      WEB_MCP_SKILLS_ROOT: /app/.claude/skills
+      WEB_CLI_WORKSPACE_ROOT: /app/backend/workspace/web_cli
+      WEB_CLI_SKILLS_ROOT: /app/.claude/skills/web_cli
+      DISPLAY: "${DISPLAY}"  # 用于 headed 模式显示浏览器
     volumes:
       # 开发模式：挂载源码实现热更新（改代码后只需重启容器）
       - ./start_server_postgres.py:/app/start_server_postgres.py
+      - ./langgraph.json:/app/langgraph.json
+      - ./.env:/app/.env
+      - /tmp/.X11-unix:/tmp/.X11-unix  # X11 socket 用于 headed 模式
       - ./langgraph_api:/app/langgraph_api
       - ./langgraph_runtime_postgres:/app/langgraph_runtime_postgres
       - ./langgraph_source:/app/langgraph_source
       - ./backend:/app/backend
+      - ./backend/workspace:/app/backend/workspace
       - ./.claude/skills:/app/.claude/skills
     depends_on:
       postgres:
@@ -113,6 +123,11 @@ services:
       MONGODB_HOST: mongodb
       MINIO_ENDPOINT: minio:9000
       BACKEND_PUBLIC_URL: http://45.76.219.40:3000
+      WEB_MCP_WORKSPACE_ROOT: /app/backend/workspace/web_mcp
+      WEB_MCP_ROOT: /app/backend/workspace/web_mcp
+      WEB_MCP_SKILLS_ROOT: /app/.claude/skills
+      WEB_CLI_WORKSPACE_ROOT: /app/backend/workspace/web_cli
+      WEB_CLI_SKILLS_ROOT: /app/.claude/skills/web_cli
     volumes:
       # 开发模式：挂载 backend 源码
       - ./backend/app:/app/backend/app
@@ -137,7 +152,7 @@ services:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3001
-      NEXT_PUBLIC_LANGGRAPH_API_URL: http://localhost:2026
+      NEXT_PUBLIC_LANGGRAPH_API_URL: http://localhost:22026
       NEXT_PUBLIC_TESTCASE_GENERATOR_ASSISTANT_ID: testcase_generator_agent
       API_SERVER_INTERNAL_URL: http://backend:3001
     extra_hosts:
