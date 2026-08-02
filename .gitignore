@@ -25,8 +25,35 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.mp4
+*.xlsx
+*.webm
 
 # Environment files
 .env
 .env.local
 exports/*.xlsx
+
+# Agent workspace 生成物（测试运行、临时文件，不应提交）
+backend/workspace/web_mcp/node_modules/
+backend/workspace/web_mcp/test-results/
+backend/workspace/web_mcp/playwright-report/
+backend/workspace/web_mcp/tests/*.spec.ts
+backend/workspace/web_mcp/tests/*.test.ts
+backend/workspace/web_mcp/package-lock.json
+backend/workspace/web_cli/.playwright-cli/
+backend/workspace/web_cli/app/
+backend/workspace/web_cli/conversation_history/
+backend/workspace/web_cli/*.png
+backend/workspace/web_cli/tmp/
+backend/workspace/testcase/exports/
+backend/workspace/testcase/*.json
+
+# 测试用例数据文件（agent 生成的临时数据）
+.claude/skills/testcase/*_test_cases.json
+.claude/skills/testcase/test-strategy/SKILL copy.md
+
+# TypeScript build info
+*.tsbuildinfo
+
+# 误建的空 package.json（backend 用 Python/uv，不用 npm）
+backend/package.json
