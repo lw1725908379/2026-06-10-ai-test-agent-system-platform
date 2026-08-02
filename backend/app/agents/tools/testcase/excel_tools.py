@@ -11,6 +11,7 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from langchain.tools import tool
 
@@ -314,12 +315,12 @@ def export_test_cases_to_excel(
         # 下载通过后端 API 代理（从 MinIO 读取后下发）
         # 使用环境变量中的公网 URL（避免 localhost 硬编码）
         public_base = settings.backend_public_url or "http://localhost:3000"
-        download_url = f"{public_base}/api/v2/exports/download/{filename}"
+        download_url = _build_download_url(public_base, filename)
     except Exception as e:
         # MinIO 上传失败时回退到本地文件
         wb.save(str(output_path))
         public_base = settings.backend_public_url or "http://localhost:3000"
-        download_url = f"{public_base}/api/v2/exports/download/{filename}"
+        download_url = _build_download_url(public_base, filename)
         logger.warning(f"MinIO 上传失败，回退到本地文件: {e}")
 
     return json.dumps({
@@ -392,8 +393,8 @@ async def export_test_cases_from_system_tool(
                 "id": tc.identifier,
                 "title": tc.name,
                 "module": str(getattr(tc, "feature", "") or ""),
-                "type": getattr(tc, "case_type", ""),
-                "priority": getattr(tc, "priority", ""),
+                "type": _enum_value(getattr(tc, "test_case_type", "")),
+                "priority": _enum_value(getattr(tc, "priority", "")),
                 "preconditions": tc.preconditions or "",
                 "steps": steps,
                 "test_data": "",
@@ -452,11 +453,11 @@ async def export_test_cases_from_system_tool(
                 content_type="application/vnd.openxmlformatsofficedocument.spreadsheetml.sheet",
             )
             public_base = settings.backend_public_url or "http://localhost:3000"
-            download_url = f"{public_base}/api/v2/exports/download/{filename}"
+            download_url = _build_download_url(public_base, filename)
         except Exception as e:
             wb.save(str(output_path))
             public_base = settings.backend_public_url or "http://localhost:3000"
-            download_url = f"{public_base}/api/v2/exports/download/{filename}"
+            download_url = _build_download_url(public_base, filename)
             logger.warning(f"MinIO 上传失败，回退到本地文件: {e}")
 
         return _json.dumps({
@@ -545,13 +546,9 @@ async def check_test_case_coverage_tool(
 
             total += 1
 
-            # 匹配：功能点名是否出现在任一用例名中
-            # 用核心词匹配（功能点名去掉修饰词后的主词），容忍用例名带场景后缀
-            matched = False
-            for name in case_names:
-                if feature in name or _feature_core_word(feature) in name:
-                    matched = True
-                    break
+            # 匹配：功能点名是否与任一用例名匹配
+            # 综合策略，容忍功能点/用例名之间的措辞差异（如"片段编辑操作" vs "片段编辑-沿轨移动"）
+            matched = _feature_matches_cases(feature, case_names)
 
             if matched:
                 covered += 1
@@ -586,18 +583,80 @@ async def check_test_case_coverage_tool(
         }, ensure_ascii=False)
 
 
-def _feature_core_word(feature: str) -> str:
+def _feature_matches_cases(feature: str, case_names: list[str]) -> bool:
     """
-    提取功能点的核心词，用于容忍用例名带场景后缀的匹配。
+    判断功能点名是否与任一用例名匹配（综合匹配策略）。
 
-    例如：
-    - "片段分割" -> "片段分割"
-    - "图片生成·size白名单" -> "size"
-    - "节点封面·提示词生成" -> "节点封面"
+    容忍功能点名与用例名之间的措辞差异，例如：
+    - "时间线缩放与吸附" vs "时间线缩放-放大时间线"（共享核心词"时间线缩放"）
+    - "片段编辑操作" vs "片段编辑-沿轨移动"（"片段编辑"是双方前缀）
+    - "节点封面·提示词生成" vs "节点封面-提示词生成"（拆分段匹配）
+    - "互动·抉择时视频行为" vs "互动抉择-视频行为"（公共前缀）
+
+    策略（任一命中即视为覆盖）：
+    1. 完整功能点名出现在任一用例名中
+    2. 功能点名拆分（·+& 分隔）后的任一段出现在任一用例名中
+    3. 用例名第一段（- 前）与功能点名任一段互为子串
+    4. 用例名第一段与功能点名任一段公共前缀 >= 3 字符
     """
-    # 去掉"·"分隔的部分，取最核心的一段
-    parts = feature.replace("·", " ").split()
+    import re
+
+    all_names = "|".join(case_names)
+    if not case_names:
+        return False
+
+    # 策略1：完整功能点名在用例名中
+    if feature in all_names:
+        return True
+
+    # 拆分功能点名，取长度 >= 2 的段
+    parts = [p for p in re.split(r"[·+&]", feature) if len(p) >= 2]
     if not parts:
-        return feature
-    # 优先匹配最长段（最可能是核心词）
-    return max(parts, key=len)
+        parts = [feature]
+
+    # 策略2：任一段在用例名中
+    for p in parts:
+        if p in all_names:
+            return True
+
+    # 策略3/4：用例名第一段 与 功能点名任一段 互为子串或公共前缀>=3
+    for name in case_names:
+        case_first = name.split("-")[0]
+        for p in parts:
+            if p in case_first or case_first in p:
+                return True
+            # 公共前缀 >= 3
+            i = 0
+            while i < min(len(p), len(case_first)) and p[i] == case_first[i]:
+                i += 1
+            if i >= 3:
+                return True
+
+    return False
+
+
+def _build_download_url(public_base: str, filename: str) -> str:
+    """
+    构造下载 URL，对文件名做 URL 编码（支持中文文件名）。
+
+    未编码的中文文件名在部分客户端/命令行工具中会请求失败（404），
+    编码后（RFC 3986）所有客户端都能正确下载。
+    """
+    encoded = quote(filename, safe="")
+    return f"{public_base}/api/v2/exports/download/{encoded}"
+
+
+def _enum_value(value: Any) -> str:
+    """
+    将 SQLAlchemy 枚举值转换为纯字符串（取 .value，避免输出 "Priority.HIGH"）。
+
+    兼容：
+    - 枚举对象（Priority.HIGH）→ "high"
+    - 普通字符串 → 原样
+    - None → ""
+    """
+    if value is None:
+        return ""
+    if hasattr(value, "value"):
+        return str(value.value)
+    return str(value)
