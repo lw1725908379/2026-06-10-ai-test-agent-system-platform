@@ -172,6 +172,41 @@ test_debug(
 # - Suggest fixes
 ```
 
+### 证据驱动诊断（Diagnose from Evidence）— 核心方法
+
+**测试失败后，必须按以下顺序收集证据并判定根因，禁止猜测。**
+
+**Step 1：读执行产物**（execute_web_script 返回的 stdout/stderr / console log）
+- 提取错误模式：`Timeout` / `Expected` / `Received` / `element not found` / `401` / `toHaveURL` 跳转
+- 看错误行号 → 定位失败的具体断言/操作
+- 看 `Received string` / `Expected pattern` → 实际值 vs 期望值
+
+**Step 2：看页面实际状态**（用 browser_snapshot，或读 error-context.md 的 YAML 快照）
+- **URL 是什么？**（是否跳登录页 → token 失效）
+- **页面有哪些元素？**（是否有 modal / 弹窗遮挡目标元素）
+- **目标元素是否存在？**（定位器失效，还是页面根本没加载出来）
+- 页面 HTML 特征（如 `<html lang="zh" class="dark">`）→ 判断页面是否正常渲染
+
+**Step 3：检查网络/控制台**（如需要）
+- browser_network_requests → 看请求是否 401 / 超时 / 加载失败
+- browser_console_messages → 看 JS 错误 / 资源加载失败
+
+**Step 4：根因判定表**（把证据映射到根因，决定动作）
+
+| 证据 | 根因 | 动作 |
+|------|------|------|
+| URL 跳 /login、401、token 相关错误 | **token/登录态失效** | 问用户要新 token，不重试 |
+| 页面卡 loading、网络无响应、请求失败 | **外部网站不可用** | 标记 fixme，问用户 |
+| 快照有 modal、目标元素被遮、点击无反应 | **弹窗遮挡** | 修脚本加关弹窗 |
+| 元素不存在、Received 与实际页面不符 | **定位器失效** | browser_generate_locator 更新 |
+| Expected vs Received 数值不同 | **断言/数据变化** | 更新断言 |
+| 页面正常但操作超时 | **时序问题** | 加 waitFor / 条件等待 |
+| 元素 toBeVisible 通过但 click 卡住 | **元素被遮或不可点** | 查快照确认遮挡，先关弹窗 |
+
+**Step 5：输出诊断结论**
+- 输出「🔍 诊断：根因=[类型]，证据=[具体证据]」后再决定修复或询问
+- **没有证据前，不修改代码、不重试**
+
 ## Result Reporting Format
 
 Provide comprehensive execution reports:

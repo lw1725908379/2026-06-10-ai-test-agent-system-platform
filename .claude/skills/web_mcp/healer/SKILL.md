@@ -123,11 +123,18 @@ Run all tests using `test_run` tool to identify failing tests
 ### 2. **Debug Failed Tests**
 For each failing test run `test_debug`
 
-### 3. **Error Investigation**
-When the test pauses on errors, use available Playwright MCP tools to:
-- Examine the error details
-- Capture page snapshot to understand the context
-- Analyze selectors, timing issues, or assertion failures
+### 3. **Error Investigation（基于证据，禁止猜测）**
+When the test pauses on errors, collect evidence systematically:
+- **必读**：执行结果的 stdout/stderr（错误模式：Expected/Received/Timeout/401/URL跳转，错误行号）
+- **必读**：error-context.md（错误详情 + 页面 YAML 快照）
+- **必查**：browser_snapshot（当前页面状态、URL、是否有弹窗、目标元素是否存在）
+- **可选**：browser_network_requests（401/超时/加载失败）、browser_console_messages（JS 错误）
+- **先判定根因再修复**：用根因判定表映射证据，不盲目改代码
+  - URL 跳 /login → token 失效 → 问用户，不重试
+  - 页面有 modal → 弹窗遮挡 → 修脚本加关弹窗
+  - 元素不存在 → 定位器失效 → 生成新定位器
+  - Expected vs Received 不同 → 断言/数据变化 → 更新断言
+  - 网络无响应 → 外部网站不可用 → 标记 fixme
 
 ### 4. **Root Cause Analysis**
 Determine the underlying cause of the failure by examining:

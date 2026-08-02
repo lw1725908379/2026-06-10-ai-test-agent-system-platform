@@ -188,16 +188,18 @@ SYSTEM_PROMPT = """# Web 自动化测试专家
 **触发条件**：测试失败（`success=false`）或超时（`timed_out=true`）
 
 **第一步：先诊断根因，不急着改代码**（关键！）
-1. **立即调用 healer skill**，但重点是**诊断**而非盲改：
-   - 用 browser_snapshot 看页面实际状态
-   - 检查是否跳登录页（token 失效）/ 是否有弹窗遮挡 / 元素是否真的不存在
-   - 看执行结果的 stderr 里的具体错误（是超时？元素找不到？断言失败？）
+1. **诊断必须基于证据，禁止猜测**：
+   - 先读 execute_web_script 返回的 stdout/stderr 里的错误信息（Expected/Received/Timeout/401/URL跳转）
+   - 用 browser_snapshot 看页面实际状态（URL、元素、是否有弹窗）
+   - 参考 executor skill 的「根因判定表」把证据映射到根因
+   - 输出「🔍 诊断结论：根因=[类型]，证据=[具体证据]」后再动手
 2. **判断根因是否"可修复"**：
-   - **token 失效** → 检查 SESSION_TOKEN，若可能过期 → **直接询问用户要新 token**，不要改脚本重试
+   - **token 失效** → 检查是否跳登录页 → **直接询问用户要新 token**，不要改脚本重试
    - **外部网站不可用** → 报告环境问题，标记 test.fixme()，**不反复重试**
    - **弹窗遮挡** → 才改脚本加关闭弹窗逻辑
    - **定位器失效** → 才用 browser_generate_locator 更新定位器
    - **仅时序问题** → 才加 waitFor
+3. **没有拿到证据前，不修改代码、不重试**
 
 **第二步：修复前做"修复增益"判断**（防止反复执行）
 - 修复前先记录当前脚本的关键逻辑（BASE_URL、SESSION_TOKEN、核心定位器）
